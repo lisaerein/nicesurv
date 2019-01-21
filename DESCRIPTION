@@ -1,0 +1,17 @@
+Package: nicesurv
+Title: This package creates a nice summary tables for survival analyses
+Version: 1.0
+Authors@R: "Lisa Rein <lisaerein@gmail.com> [aut, cre]"
+Description: This function creates a nice summary tables for survival analyses.
+Depends:
+    R (>= 3.4.4)
+Imports:
+    survival,
+    htmlTable,
+    knitr
+License: CC0
+LazyData: true
+Suggests: knitr
+VignetteBuilder: knitr
+RoxygenNote: 6.1.0
+Encoding: UTF-8
