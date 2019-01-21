@@ -1,6 +1,6 @@
 #' Lisa's Survival Summary Table 
 #'
-#' This function creates a summary table from a survfit object including survival estimates with 95% CIs, number of events, and number at risk.
+#' This function creates a summary table from a survfit object including survival estimates with CIs, number of events, and number at risk.
 #' It returns a dataframe and prints an html table by default for use in R markdown documents.
 #' @param sfit Survfit object (REQUIRED).
 #' @param times Numeric vector of times for survival estimates (REQUIRED).

@@ -5,7 +5,7 @@
 #' @param surv.lty Number for line type of survival lines. Default = 1.
 #' @param surv.size Number for size of survival lines. Default = 1.
 #' @param surv.col Character for color of survival lines. Default = "black".
-#' @param ci Logical indicator to plot 95% confidence intervals. Default = TRUE.
+#' @param ci Logical indicator to plot confidence intervals. Default = TRUE.
 #' @param ci.lty Number for line type of CI lines. Default = 2.
 #' @param ci.size NUmber for size of CI lines, Default = 1.
 #' @param ci.ribbon Logical indicator to use ribbons instead of lines for CI area. Default = FALSE. 

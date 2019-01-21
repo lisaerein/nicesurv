@@ -1,6 +1,6 @@
 #' Lisa's Cumulative Incidence Survival Table 
 #'
-#' This function creates a summary table from a survfit object of type "mstate" including cumulative incidence estimates with 95% CIs.
+#' This function creates a summary table from a survfit object of type "mstate" including cumulative incidence estimates with CIs.
 #' It returns a dataframe and prints an html table by default for use in R markdown documents.
 #' @param msfit survfit object of type "mstate" (REQUIRED).
 #' @param times Numeric vector of times for cumulative incidence estimates (REQUIRED).

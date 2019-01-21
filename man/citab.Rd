@@ -30,7 +30,7 @@ citab(msfit, times, timelab = "Time", groups = NA, grlabs = NA,
 \item{printorig}{Logical indicator to print original summary of ms-survfit object for checking purposes. Default = TRUE.}
 }
 \description{
-This function creates a summary table from a survfit object of type "mstate" including cumulative incidence estimates with 95% CIs.
+This function creates a summary table from a survfit object of type "mstate" including cumulative incidence estimates with CIs.
 It returns a dataframe and prints an html table by default for use in R markdown documents.
 }
 \keyword{Lisa}

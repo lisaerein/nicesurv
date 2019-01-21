@@ -18,12 +18,12 @@ medtab(sfit, groups = NA, grlabs = NA, grcolname = "Group",
 
 \item{med.dec}{Number of decimal places to report for median survival time. Default = 2.}
 
-\item{medlab}{Character label for median and 95% CI columns. Default = "Median survival time".}
+\item{medlab}{Character label for median and CI columns. Default = "Median survival time".}
 
 \item{printorig}{Logical indicator to print original summary of survfit object for checking purposes. Default = TRUE.}
 }
 \description{
-This function creates a summary table from a survfit object including median survival estimates with 95% CIs.
+This function creates a summary table from a survfit object including median survival estimates with CIs.
 It returns a dataframe and prints an html table by default for use in R markdown documents.
 }
 \keyword{Lisa}

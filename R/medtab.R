@@ -1,13 +1,13 @@
 #' Lisa's Median Survival Table 
 #'
-#' This function creates a summary table from a survfit object including median survival estimates with 95% CIs.
+#' This function creates a summary table from a survfit object including median survival estimates with CIs.
 #' It returns a dataframe and prints an html table by default for use in R markdown documents.
 #' @param sfit Survfit object (REQUIRED).
 #' @param groups Character vector for groups as listed in dataset. Default = NA (no groups).
 #' @param grlabs Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).
 #' @param grcolname Character label for group column. Default = "Group".
 #' @param med.dec Number of decimal places to report for median survival time. Default = 2.
-#' @param medlab Character label for median and 95% CI columns. Default = "Median survival time".
+#' @param medlab Character label for median and CI columns. Default = "Median survival time".
 #' @param printorig Logical indicator to print original summary of survfit object for checking purposes. Default = TRUE.
 #' @keywords summary survival table consulting Lisa
 #' @import survival

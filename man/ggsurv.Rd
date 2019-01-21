@@ -19,7 +19,7 @@ ggsurv(sfit, surv.lty = 1, surv.size = 1, surv.col = NA, ci = TRUE,
 
 \item{surv.col}{Character for color of survival lines. Default = "black".}
 
-\item{ci}{Logical indicator to plot 95% confidence intervals. Default = TRUE.}
+\item{ci}{Logical indicator to plot confidence intervals. Default = TRUE.}
 
 \item{ci.lty}{Number for line type of CI lines. Default = 2.}
 
