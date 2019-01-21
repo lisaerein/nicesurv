@@ -8,7 +8,9 @@ Depends:
 Imports:
     survival,
     htmlTable,
-    knitr
+    knitr,
+    pammtools,
+    ggplot2
 License: CC0
 LazyData: true
 Suggests: knitr
