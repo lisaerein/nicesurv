@@ -70,7 +70,7 @@ ggsurv <- function(sfit,
         
         if (ci){
             if (ci.ribbon){
-                pl <- pl + geom_stepribbon(aes(ymin = low, ymax = up), alpha = 0.2, fill = surv.col)
+                pl <- pl + geom_stepribbon(aes(ymin = low, ymax = up, fill = surv.col), alpha = 0.2)
             }
             if (!ci.ribbon){
                 pl <- pl + 
