@@ -75,19 +75,19 @@ ggsurv <- function(sfit,
     
     strata <- ifelse(is.null(sfit$strata) == TRUE, 1, length(sfit$strata))
     
-    if (is.na(surv.col) & strata == 1) surv.col <- "black"
+    if (is.na(surv.col[1]) & strata == 1) surv.col <- "black"
         
-    if (is.na(surv.col) & strata  > 1) surv.col <- c("red2",
-                                                     "dodgerblue",
-                                                     "darkorange",
-                                                     "forestgreen", 
-                                                     "mediumpurple",
-                                                     "royalblue4", 
-                                                     "turquoise",
-                                                     "gold", 
-                                                     "lightcyan3",
-                                                     "lightcoral",
-                                                     "darkolivegreen3")
+    if (is.na(surv.col[1]) & strata  > 1) surv.col <- c("red2",
+                                                        "dodgerblue",
+                                                        "darkorange",
+                                                        "forestgreen", 
+                                                        "mediumpurple",
+                                                        "royalblue4", 
+                                                        "turquoise",
+                                                        "gold", 
+                                                        "lightcyan3",
+                                                        "lightcoral",
+                                                        "darkolivegreen3")
   
     if (length(surv.col) == 1) surv.col  <- rep(surv.col , strata)
     if (length(surv.lty) == 1) surv.lty  <- rep(surv.lty , strata)
@@ -323,7 +323,7 @@ ggsurv <- function(sfit,
         if (!is.na(grname)) legend_title <- grname
         
         ### colors for survival lines    
-        if (length(surv.col == 1) & is.na(surv.col[1])){
+        if (is.na(surv.col[1]) & length(surv.col == 1) ){
             pl <- pl + scale_colour_discrete(name = legend_title)
         }
         if (!is.na(surv.col[1]) & length(surv.col == 1)){
@@ -346,7 +346,7 @@ ggsurv <- function(sfit,
             if (ci.ribbon){
                 pl <- pl + geom_stepribbon(aes(ymin = low, ymax = up, fill = group), alpha = ci.alpha)
                 
-                if (length(surv.col == 1) & is.na(surv.col[1])){
+                if (is.na(surv.col[1]) & length(surv.col == 1)){
                     pl <- pl + scale_fill_discrete(name = legend_title)
                 }
                 if (!is.na(surv.col[1]) & length(surv.col == 1)){
