@@ -1,0 +1,231 @@
+---
+title: "ggsurv examples"
+author: "Lisa Rein"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+rm(list =ls())
+
+knitr::opts_chunk$set(echo = TRUE,
+                      results='asis',
+                      warning = FALSE,
+                      message = FALSE)
+
+help_console <- function(topic, format=c("text", "html", "latex", "Rd"),
+                         lines=NULL, before=NULL, after=NULL) {  
+  format=match.arg(format)
+  if (!is.character(topic)) topic <- deparse(substitute(topic))
+  helpfile = utils:::.getHelpFile(help(topic))
+
+  hs <- capture.output(switch(format, 
+                              text=tools:::Rd2txt(helpfile),
+                              html=tools:::Rd2HTML(helpfile),
+                              latex=tools:::Rd2latex(helpfile),
+                              Rd=tools:::prepare_Rd(helpfile)
+                              )
+                      )
+  if(!is.null(lines)) hs <- hs[lines]
+  hs <- c(before, hs, after)
+  cat(hs, sep="\n")
+  invisible(hs)
+}
+
+```
+
+### Install packages
+
+```{r }
+
+packs <- c("knitr"
+           ,"survival"
+           ,"devtools"
+           ,"ggplot2"
+           ,"htmlTable"
+           ,"pammtools"
+           )
+
+install <- lapply(packs, function(x) require(x, character.only = T))
+
+
+install_github("lisaerein/nicesurv")
+
+library(nicesurv)
+
+help(ggsurv)
+
+# source("Z:/R packages/nicesurv_archive/20190128/ggsurv.R")
+# source("Z:/R packages/nicesurv_archive/20190128/medtab.R")
+# source("Z:/R packages/nicesurv_archive/20190128/survtab.R")
+
+```
+
+```{r echo=FALSE, results = 'asis'}
+
+help_console(ggsurv, "text")
+
+```
+
+### Load the _veteran_ dataset from the survival R package
+
+```{r results = 'markup'}
+
+data(veteran)
+
+head(veteran)
+
+```
+
+
+### Generate survival estimates using the survfit function
+
+```{r}
+
+mysfit <- survfit(Surv(time, status) ~ trt, data = veteran)
+
+```
+
+### Generate a default ggsurv KM plot
+
+```{r}
+
+ggsurv(sfit = mysfit)
+
+```
+
+### Add ggsurv optional parameters:
+
+#### Label and reorder groups, change colors and line types
+
+```{r}
+
+ggsurv(sfit = mysfit,
+       grname = "Treatment",
+       groups = c(2,1),
+       grlabs = c("Experimental", "Standard"),
+       surv.col = c("black", "darkgray"),
+       surv.lty = c(2,1))
+
+```
+
+#### Change the x axis limits/breaks to show 1 year and change y axis to percentage scale
+
+```{r}
+
+ggsurv(sfit = mysfit,
+       grname = "Treatment",
+       groups = c(2,1),
+       grlabs = c("Experimental", "Standard"),
+       surv.col = c("black", "darkgray"),
+       surv.lty = c(2,1),
+       xlab = c("Days"),
+       xlim = c(0, 360),
+       xby = 30,
+       perc = TRUE)
+
+```
+
+#### Remove 95% CI shading 
+
+```{r}
+
+ggsurv(sfit = mysfit,
+       grname = "Treatment",
+       groups = c(2,1),
+       grlabs = c("Experimental", "Standard"),
+       surv.col = c("black", "darkgray"),
+       surv.lty = c(2,1),
+       xlab = c("Days"),
+       xlim = c(0, 360),
+       xby = 30,
+       perc = TRUE,
+       ci = FALSE)
+
+```
+
+#### Add a risk table 
+
+```{r}
+
+ggsurv(sfit = mysfit,
+       grname = "Treatment",
+       groups = c(2,1),
+       grlabs = c("Experimental", "Standard"),
+       surv.col = c("black", "darkgray"),
+       surv.lty = c(1,1),
+       xlab = c("Days"),
+       xlim = c(0, 360),
+       xby = 30,
+       perc = TRUE,
+       ci = FALSE,
+       grid = FALSE,
+       risktab = TRUE,
+       risktab.margins = c(0,0.01,0.2,0.15),
+       risktab.times = c(0,30,60,120,180,240,300,360))
+
+```
+
+#### Create a non-stratified survival curve with risk table
+
+```{r}
+
+mysfit2 <- survfit(Surv(time, status) ~ 1, data= veteran)
+
+ggsurv(sfit = mysfit2,
+       grid = c(FALSE, TRUE),
+       ci.ribbon = FALSE,
+       ci.lty = 2,
+       ci.size = 0.5,
+       cens = FALSE,
+       xlab = "\nMonths",
+       xlim = c(0,3)*360,
+       xby = 90,
+       xbrlabs = seq(0,36,3),
+       risktab = T,
+       risktab.margins = c(0,0.01,0.2,0.15),
+       risktab.times = seq(0,360*3,90))
+
+```
+
+
+### Other functions in the 'nicesurv' R package
+
+### 'medtable' generates a table for median survival estimates
+
+```{r results='asis'}
+
+mt <- medtab(mysfit,
+             printorig = FALSE)
+
+mt <- medtab(mysfit,
+             groups = c(2,1),
+             grlabs = c("Experimental", "Standard"),
+             printorig = FALSE)
+
+```
+
+### 'survtab' generates a table of survival estimates 
+
+```{r results='asis'}
+
+st <- survtab(mysfit,
+              times = c(0,30,120,360,500),
+              surv.dec = 2,
+              groups = c(1,2),
+              grlabs = c("Std.", "Exp."),
+              printorig = FALSE)
+
+```
+
+### 'nicecoxph' creates a table for CoxPH regression results
+
+```{r}
+
+
+
+
+```
+
+
