@@ -23,36 +23,48 @@ medtab <- function(sfit,
                    printorig = TRUE){
     
     if (printorig) print(data.frame(summary(sfit)$table))
-    
-    tab <- data.frame(summary(sfit)$table)
-
-    names(tab) <- tolower(names(tab))
-    names(tab) <- gsub("x", "", names(tab))
-    
-    ## numeric format
-    form <- paste("%.", med.dec, "f", sep="")
-    
-    tab[,"Median"] <- sprintf(form, round(tab[,"median"], med.dec))
-    tab[,"95% CI"] <- paste("[",
-                            sprintf(form, round(tab[,"0.95lcl"], med.dec)),
-                            ", ",
-                            sprintf(form, round(tab[,"0.95ucl"], med.dec)),
-                            "]", sep="")
-    
+  
     ### check if sfit object has stratafication or not
     ### if stratified check group names and apply group labels if any
     grouped <- FALSE
     if (!is.null(sfit$strata)) grouped <- TRUE
     
+    ## numeric format
+    form <- paste("%.", med.dec, "f", sep="")
+    
     if (!grouped){
-        print(htmlTable(tab[,c("Median", "95% CI")],
-                        rnames = FALSE,
-                        cgroup = medlab,
-                        n.cgroup = 2,
-                        css.cell='padding-left: 1em; padding-right: 1em;'))
+      
+      tab <- data.frame(t(summary(sfit)$table))
+      
+      names(tab) <- tolower(names(tab))
+      names(tab) <- gsub("x", "", names(tab))
+      
+      tab[1,"Median"] <- sprintf(form, round(tab[1,"median"], med.dec))
+      tab[1,"95% CI"] <- paste("[",
+                              sprintf(form, round(tab[1,"0.95lcl"], med.dec)),
+                              ", ",
+                              sprintf(form, round(tab[1,"0.95ucl"], med.dec)),
+                              "]", sep="")      
+      print(htmlTable(tab[1,c("Median", "95% CI")],
+                      rnames = FALSE,
+                      cgroup = medlab,
+                      n.cgroup = 2,
+                      css.cell='padding-left: 1em; padding-right: 1em;'))
     }
     
     if (grouped){
+
+        tab <- data.frame(summary(sfit)$table)
+        
+        names(tab) <- tolower(names(tab))
+        names(tab) <- gsub("x", "", names(tab))
+        
+        tab[,"Median"] <- sprintf(form, round(tab[,"median"], med.dec))
+        tab[,"95% CI"] <- paste("[",
+                                sprintf(form, round(tab[,"0.95lcl"], med.dec)),
+                                ", ",
+                                sprintf(form, round(tab[,"0.95ucl"], med.dec)),
+                                "]", sep="")
         
         stratavar <- strsplit(names(sfit$strata)[1], '=')[[1]][1]
         groups_eq <- NA

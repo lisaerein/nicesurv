@@ -39,7 +39,7 @@ citab   <- function(msfit,
     lower[probs == 0 | probs == 1] <- NA
     upper[probs == 0 | probs == 1] <- NA
     
-    if (perc){
+    if (percent){
         probs <- 100*probs
         lower <- 100*lower
         upper <- 100*upper
@@ -79,7 +79,7 @@ citab   <- function(msfit,
                         n.rgroup = nrow(res),
                         css.cell='padding-left: 5em; padding-right: 2em;',
                         rnames = times,
-                        col.rgroup=c("#EEEEEE", 'none')))
+                        col.rgroup=c('none')))
     }
     
     if (grouped){

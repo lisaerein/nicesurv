@@ -72,7 +72,7 @@ survtab <- function(sfit,
                         css.cell='padding-left: 2em; padding-right: 2em;',
                         rnames = Time,
                         rowlabel = timelab,
-                        col.rgroup=c(color, 'none')))
+                        col.rgroup=c('none')))
     }
     
     if (grouped){
