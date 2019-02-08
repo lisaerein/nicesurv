@@ -39,7 +39,7 @@ citab   <- function(msfit,
     lower[probs == 0 | probs == 1] <- NA
     upper[probs == 0 | probs == 1] <- NA
     
-    if (percent){
+    if (perc){
         probs <- 100*probs
         lower <- 100*lower
         upper <- 100*upper
