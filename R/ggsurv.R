@@ -299,7 +299,7 @@ ggsurv <- function(sfit,
         
         # apply group labels (if not NA)
         if (is.na(groups[1])) groups <- grps
-        if (is.na(grlabs[1])) grlabs <- grps
+        if (is.na(grlabs[1])) grlabs <- groups
         
         dat <- do.call(rbind, gr.df)
         dat$group <- factor(dat$group,
