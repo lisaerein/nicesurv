@@ -5,6 +5,8 @@
 #' @param msfit survfit object of type "mstate" (REQUIRED).
 #' @param times Numeric vector of times for cumulative incidence estimates (REQUIRED).
 #' @param timelab Character label for time. Default = "Time".
+#' @param events Character vector for event names (including state 0).
+#' @param evlabs Character vector for event labels.
 #' @param groups Character vector for groups as listed in dataset. Default = NA (no groups).
 #' @param grlabs Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).
 #' @param state0 Character label for state 0. Default = NA (do not display estimates for state 0).
@@ -20,6 +22,8 @@
 citab   <- function(msfit, 
                     times,
                     timelab = "Time",
+                    events = NA,
+                    evlabs = NA,
                     groups = NA,
                     grlabs = NA,
                     state0 = NA,
@@ -59,22 +63,34 @@ citab   <- function(msfit,
         ci[,i] <- gsub("NA|NaN", "---", ci[,i])
     }
     ci <- data.frame(ci)
-    names(ci) <- c(est$states[1:(length(est$states)-1)], state0)
+    names(ci) <- c(est$states[1:(length(est$states)-1)], ifelse(!is.na(state0), state0, "state0"))
     
     ### check if msfit object has stratafication or not
     ### if stratified check group names and apply group labels if any
     grouped <- FALSE
     if (!is.null(msfit$strata)) grouped <- TRUE
     
+    ### relabel/reorder events?
+    evnts <- names(ci)
+    if (!is.na(events[1])) {
+        if (sum(events %in% evnts) == 0) events <- evnts <- NA
+    }
+    if (is.na(events[1])) events <- evnts
+    if (is.na(evlabs[1])) evlabs <- events
+    
     if (!grouped){
         res <- data.frame("time" = c(est$time), rbind(ci))
-        names(res)[1] <- timelab
-        if (is.na(state0)) res <- res[,-ncol(res)]
+        # names(res)[1] <- timelab
         
-        restab <- res[,2:ncol(res)]
+        res <- res[,c("time", events)]
+        
+        restab <- res[,2:ncol(res), drop = F]
+        names(restab) <- evlabs
         
         print(htmlTable(restab,
-                        header = names(ci)[1:ncol(restab)],
+                        n.cgroup = ncol(restab),
+                        cgroup = "Cumulative incidence [95% CI]",
+                        header = names(restab),
                         rgroup = timelab,
                         n.rgroup = nrow(res),
                         css.cell='padding-left: 5em; padding-right: 2em;',
@@ -99,25 +115,24 @@ citab   <- function(msfit,
                           stringsAsFactors = FALSE)
         
         # apply group labels (if not NA)
-        res$order <- 1:nrow(res)
         if (is.na(groups[1])) groups <- groups_eq <- levels(est$strata)
         if (is.na(grlabs[1])) grlabs <- unlist(lapply(groups_eq, function(x) strsplit(x, '=')[[1]][2]))
         
         res$strata <- factor(as.character(res$strata),
                              levels = groups_eq,
                              labels = grlabs)
-        
-        res <- res[order(res$strata, res$order),]
-        res <- res[,-ncol(res)]
-        
-        if (is.na(state0)) res <- res[,-ncol(res)]
+
+        res <- res[,c("time", "strata", events)]
         
         rows <- table(res$strata)
         
-        restab <- res[,3:ncol(res)]
+        restab <- res[,3:ncol(res), drop = F]
+        names(restab) <- evlabs
         
         print(htmlTable(restab,
-                        header = names(ci)[1:ncol(restab)],
+                        n.cgroup = ncol(restab),
+                        cgroup = "Cumulative incidence [95% CI]",
+                        header = names(restab),
                         rowlabel = timelab,  
                         rgroup = grlabs,
                         n.rgroup = rows,

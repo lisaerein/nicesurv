@@ -1,12 +1,13 @@
 Package: nicesurv
-Title: This package creates a nice summary tables for survival analyses
+Title: This package creates a nice summary tables and plots for survival analysis
 Version: 1.0
 Authors@R: "Lisa Rein <lisaerein@gmail.com> [aut, cre]"
-Description: This function creates a nice summary tables for survival analyses.
+Description: This function creates nice summary tables and plots to support survival analysis.
 Depends:
     R (>= 3.4.4)
 Imports:
     survival,
+    cmprsk,
     htmlTable,
     knitr,
     pammtools,

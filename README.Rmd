@@ -1,5 +1,5 @@
 ---
-title: "ggsurv examples"
+title: "ggsurv example"
 author: "Lisa Rein"
 date: "`r Sys.Date()`"
 output: html_document
@@ -56,16 +56,6 @@ library(nicesurv)
 
 help(ggsurv)
 
-# source("Z:/R packages/nicesurv_archive/20190128/ggsurv.R")
-# source("Z:/R packages/nicesurv_archive/20190128/medtab.R")
-# source("Z:/R packages/nicesurv_archive/20190128/survtab.R")
-
-```
-
-```{r echo=FALSE, results = 'asis'}
-
-help_console(ggsurv, "text")
-
 ```
 
 ### Load the _veteran_ dataset from the survival R package
@@ -84,6 +74,8 @@ head(veteran)
 ```{r}
 
 mysfit <- survfit(Surv(time, status) ~ trt, data = veteran)
+
+plot(mysfit)
 
 ```
 
@@ -219,13 +211,5 @@ st <- survtab(mysfit,
 
 ```
 
-### 'nicecoxph' creates a table for CoxPH regression results
-
-```{r}
-
-
-
-
-```
 
 

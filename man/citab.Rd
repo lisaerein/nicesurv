@@ -4,9 +4,9 @@
 \alias{citab}
 \title{Lisa's Cumulative Incidence Survival Table}
 \usage{
-citab(msfit, times, timelab = "Time", groups = NA, grlabs = NA,
-  state0 = NA, ci.dec = 2, perc = FALSE, color = "#EEEEEE",
-  printorig = TRUE)
+citab(msfit, times, timelab = "Time", events = NA, evlabs = NA,
+  groups = NA, grlabs = NA, state0 = NA, ci.dec = 2,
+  perc = FALSE, color = "#EEEEEE", printorig = TRUE)
 }
 \arguments{
 \item{msfit}{survfit object of type "mstate" (REQUIRED).}
@@ -14,6 +14,10 @@ citab(msfit, times, timelab = "Time", groups = NA, grlabs = NA,
 \item{times}{Numeric vector of times for cumulative incidence estimates (REQUIRED).}
 
 \item{timelab}{Character label for time. Default = "Time".}
+
+\item{events}{Character vector for event names (including state 0).}
+
+\item{evlabs}{Character vector for event labels.}
 
 \item{groups}{Character vector for groups as listed in dataset. Default = NA (no groups).}
 
