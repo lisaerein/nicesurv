@@ -33,7 +33,7 @@
 #' @import ggplot2
 #' @import cmprsk
 #' @export
-crstack <- function(msfit, 
+ggcuminc <- function(msfit, 
                     groups = NA,
                     grlabs = NA,
                     grname = " ",
