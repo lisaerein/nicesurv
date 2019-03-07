@@ -17,6 +17,7 @@
 #' @param xby Number for x axis major tick marks. Default = NA (ggplot selected).
 #' @param yby Numeric for y axis major tick marks. Default = 0.1. 
 #' @param xbrlabs Vector for alternative x axis labels. Default = NA.
+#' @param xextend Number to extend curves out to this timepoint if possible (if last event is not censored). Default = NA (do not extend).
 #' @param stack Character to indicate stacking events "events" or groups "groups". Default = "events".
 #' @param state0 Character label for state 0. Default = NA (do not display estimates for state 0).
 #' @param cuminc.col Character vector for color of shaded cumulative incidence bands. Default = default colors.
@@ -48,6 +49,7 @@ ggcuminc <- function(msfit,
                     xby = NA,
                     yby = 0.1,
                     xbrlabs = NA,
+                    xextend = NA,
                     stack = "events",
                     state0 = "Healthy",
                     cuminc.col = NA,
@@ -74,7 +76,7 @@ ggcuminc <- function(msfit,
     
     if (is.na(stack) | !(stack %in% c("events", "groups"))) stack <- "events"
     
-    est <- summary(msfit)
+    est <- summary(msfit, censored = T)
     
     if (sum(is.na(ylim)) == 0){
         ymin <- ylim[1]
@@ -129,8 +131,31 @@ ggcuminc <- function(msfit,
         
         res <- data.frame("group" = as.character(est$strata), 
                           "time" = c(est$time),
+                          "nevents" = apply(est$n.event, 1, function(x) sum(x)),
                           rbind(probs),
                           stringsAsFactors = FALSE)
+        
+        if (is.numeric(xextend)){
+            ### get number of events at last timepoint for each group
+            last_groupev <- aggregate(res$nevents, by = list(res$group), FUN = tail, n = 1)
+            names(last_groupev) <- c("group", "nlast")
+            
+            tempgr <- unique(res$group)
+            res_temp <- NULL
+            for (g in 1:length(tempgr)){
+                gr_temp <- subset(res, group == tempgr[g])
+                
+                ## if the last timepoint is not censored, you can extend curve out to max xlim
+                if (last_groupev[last_groupev$group == tempgr[g], "nlast"] > 0){
+                    gr_temp <- rbind(gr_temp, tail(gr_temp,1))
+                    gr_temp[nrow(gr_temp), "time"] <- xextend
+                }
+                res_temp <- rbind(res_temp, gr_temp)
+            }
+            res <- res_temp
+        }
+        
+        res <- res[,names(res)[names(res) != "nevents"]]
         
         res_l <- melt(res,
                       id.vars = c("group", "time"),
