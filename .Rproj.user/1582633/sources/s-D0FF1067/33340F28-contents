@@ -200,7 +200,7 @@ ggcuminc(msfit,
 
 msfit <- survfit(Surv(tt_wean3, wean3, type = "mstate") ~ group , data = dat)
 
-ggcuminc(msfit,
+g <- ggcuminc(msfit,
         events = c("remain", "wean", "death"),
         evlabs = c("Remain on RVAD", "Weaned", "Died without weaning"),
         evtitle = "Patient status",
@@ -212,6 +212,8 @@ ggcuminc(msfit,
         xlim = c(0,45),
         xextend = 44,
         xby = 7)
+
+g + theme(legend.position = "bottom")
 
 ```
 
