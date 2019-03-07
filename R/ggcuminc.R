@@ -308,6 +308,9 @@ ggcuminc <- function(msfit,
                         xlab(xlab) +
                         ylab(ylab) +
                         ggtitle(main)
+            if (!perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0))
+            if ( perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0),
+                                                   labels = scales::percent_format(accuracy = 1))
         }
 
         if (!is.na(by)){
