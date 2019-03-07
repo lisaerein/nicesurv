@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1551983631565.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "BE4DCA05",
+    "lastKnownWriteTime" : 1551983865,
+    "last_content_update" : 1551983865942,
+    "path" : "~/GitHub/nicesurv/R/ggcuminc.R",
+    "project_path" : "R/ggcuminc.R",
+    "properties" : {
+        "cursorPosition" : "350,0",
+        "scrollLine" : "184"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

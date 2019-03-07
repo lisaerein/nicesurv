@@ -1,0 +1,698 @@
+---
+title: "Superior Vena Cava syndrome following right ventricular assist device implantation with tandem protek duo (TPD)"
+author: "Lisa Rein for Bernice Badu"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r prelim, message=FALSE, echo=FALSE, warning=FALSE}
+rm(list =ls())
+
+packs <- c("readr",
+           "readxl",
+           "devtools",
+           "Hmisc",
+           "plyr",
+           "xtable",
+           "knitr",
+           "ggplot2",
+           "gridExtra",
+           "reshape2",
+           "survival",
+           "cmprsk",
+           "dplyr",
+           "VIM",
+           "htmlTable",
+           "scales")
+
+loadit <- function(x){
+  for( i in x ){
+    #  require returns TRUE invisibly if it was able to load package
+    if( ! require( i , character.only = TRUE ) ){
+      #  If package was not able to be loaded then re-install
+      install.packages( i , dependencies = TRUE )
+      #  Load package after installing
+      require( i , character.only = TRUE )
+    }
+  }
+}
+
+
+loadit(packs)
+
+install_github("lisaerein/nicetable")
+library(nicetable)
+
+install_github("lisaerein/nicesurv")
+library(nicesurv)
+
+wd <- "Z:/consulting/Badu_Bernice"
+setwd(wd)
+
+opts_knit$set(root.dir = wd)
+
+opts_chunk$set(fig.path = "figures/manuscript/",
+               dev = c('png','tiff'),
+               echo=FALSE,
+               message=FALSE,
+               warning=FALSE,
+               results='asis',
+               fig.height = 5,
+               fig.width = 7,
+               cache = FALSE)
+options(width = 10000)
+
+```
+
+
+```{r}
+
+dat <- read_excel("MASTER_Protek_Duo_data_collection.xlsx", 
+                             sheet = "protek_duo_current", 
+                             range = "A1:CL39")
+
+dat <- dat[,c("Subject"                                             
+              , "Subgroups"
+              , "Living? Y=1 N=0"                                     
+              , "Date of Death"
+              , "Last data point"
+              , "RVAD Implant date"
+              , "Date of RVAD removal (if removed)"
+              , "CVP Pre op"
+              , "CVP Post Placement"                                  
+              , "CVP POD1"                                            
+              , "CVP POD3"                                            
+              , "CVP post explant" 
+              , "PRE-TPD VIS"
+              , "POST-TPD VIS"
+              , "POD1 VIS"
+              , "POD2 VIS"
+              , "HR (preop)"
+              , "RV Stroke work index"
+              )]
+
+dat <- data.frame(dat)
+names(dat) <- c("id",
+                "group",
+                "living",
+                "dod",
+                "date_lastfu",
+                "date_rvad_imp",
+                "date_rvad_rem",
+                "cvp_pre",
+                "cvp_place",
+                "cvd_pod1",
+                "cvd_pod3",
+                "cvd_exp",
+                "vis_pretpd",
+                "vis_posttpd",
+                "vis_pod1",
+                "vis_pod2",
+                "hr",
+                "rvstroke")
+
+dat$group <- capitalize(tolower(dat$group))
+
+### create survival times
+
+dat$tt_death  <- as.numeric(difftime(dat$dod          , dat$date_rvad_imp, units = "days"))
+dat$tt_rem    <- as.numeric(difftime(dat$date_rvad_rem, dat$date_rvad_imp, units = "days"))
+dat$tt_lastfu <- as.numeric(difftime(dat$date_lastfu  , dat$date_rvad_imp, units = "days"))
+
+dat$wean3 <- NA
+dat$wean3[dat$living == 1 & is.na(dat$tt_rem) & is.na(dat$tt_death)] <- 0
+dat$wean3[dat$living == 0 & (dat$tt_rem >= dat$tt_death)] <- 1
+dat$wean3[dat$living == 0 & !is.na(dat$tt_rem) & (dat$tt_rem < dat$tt_death)] <- 2
+dat$wean3[dat$living == 1 & !is.na(dat$tt_rem)] <- 2
+
+dat$tt_wean3 <- NA
+dat$tt_wean3[dat$wean3 == 0] <- dat$tt_lastfu[dat$wean3 == 0] 
+dat$tt_wean3[dat$wean3 == 1] <- dat$tt_death[dat$wean3 == 1] 
+dat$tt_wean3[dat$wean3 == 2] <- dat$tt_rem[dat$wean3 == 2] 
+
+dat$wean3 <- factor(dat$wean3,
+                    levels = c(0,1,2),
+                    labels = c("remain", "death", "wean"))
+
+```
+
+### Table 1 (check variables: HR and RV stroke index)
+
+```{r}
+
+tab1 <- nicetable(df = dat,
+                  by = "group",
+                  covs = c("hr",
+                           "rvstroke"),
+                  type = 1,
+                  dispN = T,
+                  labels  = c("HR (pre-op)",
+                              "RV Stroke work index"),
+                  tests = "np")
+
+```
+
+### Cumulative incidence plots
+
+#### Cumulative incidence plots: Overall
+
+```{r ci_overall_a, fig.width=6, fig.height=4}
+
+msfit <- survfit(Surv(tt_wean3, wean3, type = "mstate") ~ 1 , data = dat)
+
+ggcuminc(msfit,
+        events = c("remain", "wean", "death"),
+        evlabs = c("Remaining on device", "Weaned", "Died without weaning"),
+        evtitle = "Patient status",
+        state0 = "remain",
+        ylab = "Probability\n",
+        xlab = ("\nRVAD duration (days)"),
+        cuminc.col = c("snow2", "lightskyblue", "midnightblue"),
+        cuminc.lty = NA,
+        xextend = 44,
+        xlim = c(0, 45),
+        xby = 7)
+
+```
+
+```{r ci_overall_b, fig.width=8, fig.height=4}
+
+ggcuminc(msfit,
+        events = c("remain", "wean", "death"),
+        evlabs = c("Remaining on device", "Weaned", "Died without weaning"),
+        evtitle = "Patient status",
+        state0 = "remain",
+        ylab = "Probability\n",
+        xlab = ("\nRVAD duration (days)"),
+        stack = "groups",
+        xextend = 44,
+        cuminc.col = c("black", "gray", "black"),
+        cuminc.lty = c(1, 1, 6),
+        xlim = c(0,45),
+        cuminc.size = 1.1,
+        xby = 7)
+
+```
+
+#### Cumulative incidence plots: Subgroups
+
+```{r ci_subgroup_a, fig.width=10, fig.height=4}
+
+msfit <- survfit(Surv(tt_wean3, wean3, type = "mstate") ~ group , data = dat)
+
+ggcuminc(msfit,
+        events = c("remain", "wean", "death"),
+        evlabs = c("Remaining on device", "Weaned", "Died without weaning"),
+        evtitle = "Patient status",
+        state0 = "remain",
+        ylab = "Probability\n",
+        xlab = ("\nRVAD duration (days)"),
+        cuminc.col = c("snow2", "lightskyblue", "midnightblue"),
+        cuminc.lty = NA,
+        xlim = c(0,45),
+        xextend = 44,
+        xby = 7)
+
+```
+
+```{r ci_subgroup_b, fig.width=10, fig.height=4}
+
+ggcuminc(msfit,
+        events = c("remain", "wean", "death"),
+        evlabs = c("Remaining on device", "Weaned", "Died without weaning"),
+        evtitle = "Patient status",
+        state0 = "remain",
+        stack = "groups",
+        graystest = T,
+        df = dat,
+        timevar = "tt_wean3",
+        eventvar = "wean3",
+        ylab = "Probability\n",
+        xlab = ("\nRVAD duration (days)"),
+        cuminc.col = c("black", "gray", "black"),
+        cuminc.lty = c(1, 1, 6),
+        cuminc.size = 1.1,
+        xlim = c(0, 45),
+        xextend = 44,
+        xby = 7)
+
+```
+
+### Central venous pressure (CVP) plots
+
+* Error bars are the mean +/- 1 standard deviation.
+
+```{r}
+
+cvp <- dat[,c("id", 
+              "group", 
+              "cvp_pre",
+              "cvp_place",
+              "cvd_pod1",
+              "cvd_pod3",
+              "cvd_exp")]
+
+names(cvp) <- c("id", 
+                "group", 
+                "cvp1",
+                "cvp2",
+                "cvp3",
+                "cvp4",
+                "cvp5")
+
+timepts <- c("Pre-TPD", "Post-TPD", "POD1", "POD3", "Post-Explant")
+
+cvpli <- melt(cvp, id.vars = c("id", "group"))
+
+cvpli$value <- as.numeric(cvpli$value)
+cvpli$variable <- as.numeric(as.factor(cvpli$variable))
+
+cvplg <- ddply(cvpli,
+              c("group", "variable"),
+              summarise,
+              mean = mean(value, na.rm=T),
+              n = sum(!is.na(value)),
+              sd = sd(value, na.rm=T))
+cvplg$lower <- cvplg$mean - cvplg$sd
+cvplg$upper <- cvplg$mean + cvplg$sd
+# cvplg$lower <- cvplg$mean - 1.96*(cvplg$sd/sqrt(cvplg$n))
+# cvplg$upper <- cvplg$mean + 1.96*(cvplg$sd/sqrt(cvplg$n))
+
+cvplo <- ddply(cvpli,
+              c("variable"),
+              summarise,
+              mean = mean(value, na.rm=T),
+              n = sum(!is.na(value)),
+              sd = sd(value, na.rm=T))
+cvplo$lower <- cvplo$mean - cvplo$sd
+cvplo$upper <- cvplo$mean + cvplo$sd
+# cvplo$lower <- cvplo$mean - 1.96*(cvplo$sd/sqrt(cvplo$n))
+# cvplo$upper <- cvplo$mean + 1.96*(cvplo$sd/sqrt(cvplo$n))
+
+### get p-values for overall plot
+cvp$cvp1 <- as.numeric(cvp$cvp1)
+cvp$cvp2 <- as.numeric(cvp$cvp2)
+cvp$cvp3 <- as.numeric(cvp$cvp3)
+cvp$cvp4 <- as.numeric(cvp$cvp4)
+cvp$cvp5 <- as.numeric(cvp$cvp5)
+p <- rep(NA, 5)
+p[2] <- wilcox.test(cvp$cvp1, cvp$cvp2, paired = T)$p.value
+p[3] <- wilcox.test(cvp$cvp1, cvp$cvp3, paired = T)$p.value
+p[4] <- wilcox.test(cvp$cvp1, cvp$cvp4, paired = T)$p.value
+p[5] <- wilcox.test(cvp$cvp1, cvp$cvp5, paired = T)$p.value
+p <- p.adjust(p, method = "bonferroni")
+plab <- paste("p =", sprintf("%.3f", round(p,3)))
+plab[1] <- ""
+plab[p < 0.001] <- "p < 0.001"
+
+pdat <- data.frame("variable" = 1:5, "upper" = cvplo$upper,  "p" = plab)
+
+```
+
+#### CVP plots: Overall
+
+* p-values are from a Wilcoxon signed-rank test (non-parametric paired test) for each timepoint compared to baseline. p-values were adjusted for multiple comparisons using a Bonferonni correction.
+
+```{r cvp_spag_overall, fig.width=7, fig.height=5}
+
+g <- ggplot(cvplo, aes(x = variable)) +
+            geom_line(data = cvpli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            geom_line(aes(y = mean), size = 1.25) +
+            geom_errorbar(aes(ymin = lower, ymax = upper), size = 1.25, width = 0.1) +
+            geom_text(data= pdat, aes(y = upper + 0.75, label = plab), vjust = 0) +
+            scale_y_continuous(limits = c(0,35), breaks = seq(0, 35, 5)) +
+            scale_x_continuous(breaks = 1:5, labels = timepts) +
+            xlab("") +
+            ylab("Central venous pressure\n") +
+            theme_bw() +
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank())
+g
+
+```
+
+```{r cvp_box_overall}
+
+g <- ggplot(cvpli, aes(x = as.factor(variable), y = value)) +
+            geom_boxplot() +
+            scale_x_discrete(breaks = 1:5, labels = timepts) +
+            scale_y_continuous(limits = c(0,35), breaks = seq(0, 35, 5)) +
+            coord_cartesian(ylim = c(0,35)) +
+            xlab("") +
+            ylab("Central venous pressure\n") +
+            theme_bw() +
+            theme(panel.grid.major.x = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom")
+g
+
+```
+
+#### CVP plots: Subgroup
+
+```{r cvp_spag_subgroup_a, fig.width=10, fig.height=4}
+
+g <- ggplot(cvplg, aes(x = variable)) +
+            facet_grid(.~group) +
+            geom_line(data = cvpli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            geom_line(aes(y = mean), size = 1) +
+            geom_errorbar(aes(ymin = lower, ymax = upper), size = 1, width = 0.1) + 
+            scale_y_continuous(limits = c(0,35), breaks = seq(0, 35, 5)) +
+            scale_x_continuous(breaks = 1:5, labels = timepts) +
+            xlab("") +
+            ylab("Central venous pressure\n") +
+            theme_bw() +
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.text.x = element_text(angle = 315, vjust = 1, hjust=0),
+                  plot.margin=unit(c(0.5,1,0.25,0.5),"cm"))
+g
+
+```
+
+```{r cvp_spag_subgroup_b, fig.width=7, fig.height=5}
+
+cols <- c("Cardiogenic shock" = "darkorange1"    ,
+          "Cardiotomy"        = "dodgerblue3"    ,
+          "Pulmonary"         = "darkolivegreen3")
+
+ltys <- c("Cardiogenic shock" = 1,
+          "Cardiotomy"        = 1,
+          "Pulmonary"         = 1)
+
+g <- ggplot(cvplg, aes(x = variable)) +
+            geom_line(data = cvpli, aes(y = value, group=id), color = "gray", alpha = 0.30) +
+            geom_line(aes(y = mean, linetype = group, color = group), 
+                      position=position_dodge(width=0.3),
+                      size = 1.2) +
+            geom_errorbar(aes(ymin = lower, ymax = upper, linetype = group, 
+                              color = group), 
+                          position=position_dodge(width=0.3),
+                          size = 1.2, width = 0.2) +
+            scale_y_continuous(limits = c(0,35), breaks = seq(0, 35, 5)) +
+            scale_x_continuous(breaks = 1:5, labels = timepts) +
+            xlab("") +
+            ylab("Central venous pressure\n") +
+            scale_color_manual(name = "", values = cols) +
+            scale_linetype_manual(name = "", values = ltys) +
+            theme_bw() +
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom")
+g
+
+```
+
+
+
+```{r cvp_box_subgroup_a, fig.width=10, fig.height=4}
+
+g <- ggplot(cvpli, aes(x = as.factor(variable), y = value)) +
+            facet_grid(.~group) +
+            geom_boxplot() +
+            # geom_line(data = cvpli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            scale_x_discrete(breaks = 1:5, labels = timepts) +
+            scale_y_continuous(limits = c(0,35), breaks = seq(0, 35, 5)) +
+            coord_cartesian(ylim = c(0,35)) +
+            xlab("") +
+            ylab("Central venous pressure\n") +
+            scale_color_manual(name = "", values = cols) +
+            scale_linetype_manual(name = "", values = ltys) +
+            theme_bw() +
+            theme(panel.grid.major.x = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom",
+                  axis.text.x = element_text(angle = 315, vjust = 1, hjust=0),
+                  plot.margin=unit(c(0.5,1,0.25,0.5),"cm"))
+g
+
+```
+
+```{r cvp_box_subgroup_b}
+
+g <- ggplot(cvpli, aes(x = as.factor(variable), y = value, fill = group)) +
+            geom_boxplot() +
+            scale_fill_manual(name = "", values = cols) +
+            # geom_line(data = cvpli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            scale_x_discrete(breaks = 1:5, labels = timepts) +
+            scale_y_continuous(limits = c(0,35), breaks = seq(0, 35, 5)) +
+            coord_cartesian(ylim = c(0,35)) +
+            xlab("") +
+            ylab("Central venous pressure\n") +
+            scale_color_manual(name = "", values = cols) +
+            scale_linetype_manual(name = "", values = ltys) +
+            theme_bw() +
+            theme(panel.grid.major.x = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom")
+g
+
+```
+
+### Vaso-Inotropic Score (VIS) plots
+
+* Error bars are the mean +/- 1 standard deviation (the lower bound was truncated at 0).
+
+```{r }
+
+vis <- dat[,c("id", 
+              "group", 
+              "vis_pretpd",
+              "vis_posttpd",
+              "vis_pod1",
+              "vis_pod2")]
+
+names(vis) <- c("id", 
+                "group", 
+                "vis1",
+                "vis2",
+                "vis3",
+                "vis4")
+
+timepts <- c("Pre-TPD", "Post-TPD", "POD1", "POD2")
+
+visli <- melt(vis, id.vars = c("id", "group"))
+
+visli$value <- as.numeric(visli$value)
+visli$variable <- as.numeric(as.factor(visli$variable))
+
+vislg <- ddply(visli,
+              c("group", "variable"),
+              summarise,
+              mean = mean(value, na.rm=T),
+              median = median(value, na.rm=T),
+              sd = sd(value, na.rm=T),
+              n = sum(!is.na(value)),
+              q1 = quantile(value, na.rm=T)[2],
+              q3 = quantile(value, na.rm=T)[4])
+vislg$lower <- vislg$mean - vislg$sd
+vislg$upper <- vislg$mean + vislg$sd
+# vislg$lower <- vislg$mean - (vislg$sd/sqrt(vislg$n))
+# vislg$upper <- vislg$mean + (vislg$sd/sqrt(vislg$n))
+
+vislo <- ddply(visli,
+              c("variable"),
+              summarise,
+              mean = mean(value, na.rm=T),
+              sd = sd(value, na.rm=T),
+              n = sum(!is.na(value)))
+vislo$lower <- vislo$mean - vislo$sd
+vislo$upper <- vislo$mean + vislo$sd
+# vislo$lower <- vislo$mean - (vislo$sd/sqrt(vislo$n))
+# vislo$upper <- vislo$mean + (vislo$sd/sqrt(vislo$n))
+
+vislg$lower[vislg$lower < 0] <- 0
+vislo$lower[vislo$lower < 0] <- 0
+
+### get p-values for overall plot
+vis$vis1 <- as.numeric(vis$vis1)
+vis$vis2 <- as.numeric(vis$vis2)
+vis$vis3 <- as.numeric(vis$vis3)
+vis$vis4 <- as.numeric(vis$vis4)
+p <- rep(NA, 4)
+p[2] <- wilcox.test(vis$vis1, vis$vis2, paired = T)$p.value
+p[3] <- wilcox.test(vis$vis1, vis$vis3, paired = T)$p.value
+p[4] <- wilcox.test(vis$vis1, vis$vis4, paired = T)$p.value
+p <- p.adjust(p, method = "bonferroni")
+plab <- paste("p =", sprintf("%.3f", round(p,3)))
+plab[1] <- ""
+plab[p < 0.001] <- "p < 0.001"
+
+pdat <- data.frame("variable" = c(1,2,3,4), "upper" = vislo$upper,  "p" = plab)
+
+```
+
+#### VIS plots: Overall
+
+* p-values are from a Wilcoxon signed-rank test (non-parametric paired test) for each timepoint compared to baseline. p-values were adjusted for multiple comparisons using a Bonferonni correction.
+
+```{r vis_spag_overall, fig.width=7, fig.height=5}
+
+g <- ggplot(vislo, aes(x = variable)) +
+            geom_line(data = visli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            geom_line(aes(y = mean), size = 1.25) +
+            geom_errorbar(aes(ymin = lower, ymax = upper), size = 1, width = 0.1) +
+            geom_text(data= pdat, aes(y = upper + 1, label = plab), vjust = 0) +
+            scale_y_continuous(breaks = seq(0, 50, 10)) +
+            scale_x_continuous(breaks = 1:4, labels = timepts) +
+            coord_cartesian(ylim = c(0,50)) +
+            xlab("") +
+            ylab("Vaso-Inotropic Score\n") +
+            theme_bw() +
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank())
+g
+
+```
+
+```{r vis_box_overall}
+
+g <- ggplot(visli, aes(x = as.factor(variable), y = value)) +
+            geom_boxplot() +
+            # geom_line(data = visli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            scale_x_discrete(breaks = 1:4, labels = timepts) +
+            scale_y_continuous(breaks = seq(0, 50, 10)) +
+            coord_cartesian(ylim = c(0,50)) +
+            xlab("") +
+            ylab("Vaso-Inotropic Score\n") +
+            theme_bw() +
+            theme(panel.grid.major.x = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom")
+g
+
+```
+
+#### VIS plots: Subgroup
+
+```{r vis_spag_subgroup_a, fig.width=10, fig.height=4}
+
+g <- ggplot(vislg, aes(x = variable)) +
+            facet_grid(.~group) +
+            # geom_point(aes(y = mean), size = 2) +
+            geom_line(data = visli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            geom_line(aes(y = mean), size = 1) +
+            geom_errorbar(aes(ymin = lower, ymax = upper), size = 1, width = 0.1) +
+           # geom_line(aes(y = median), size = 1) +
+           # geom_errorbar(aes(ymin = q1, ymax = q3), size = 1, width = 0.1) +
+            scale_x_continuous(breaks = 1:4, labels = timepts) +
+            scale_y_continuous(breaks = seq(0, 50, 10)) +
+            coord_cartesian(ylim = c(0,50)) +
+            xlab("") +
+            ylab("Vaso-Inotropic Score\n") +
+            theme_bw() +
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  axis.text.x = element_text(angle = 315, vjust = 1, hjust=0),
+                  plot.margin=unit(c(0.5,1,0.25,0.5),"cm"))
+g
+
+```
+
+```{r vis_spag_subgroup_b, fig.width=7, fig.height=5}
+
+cols <- c("Cardiogenic shock" = "darkorange1"    ,
+          "Cardiotomy"        = "dodgerblue3"    ,
+          "Pulmonary"         = "darkolivegreen3")
+
+ltys <- c("Cardiogenic shock" = 1,
+          "Cardiotomy"        = 1,
+          "Pulmonary"         = 1)
+
+g <- ggplot(vislg, aes(x = variable)) +
+            # facet_grid(.~group) +
+            # geom_point(aes(y = mean), size = 2) +
+            geom_line(data = visli, aes(y = value, group=id), color = "gray", alpha = 0.30) +
+            geom_line(aes(y = mean, linetype = group, color = group), 
+                      position=position_dodge(width=0.25),
+                      size = 1.2) +
+            geom_errorbar(aes(ymin = lower, ymax = upper, linetype = group, color = group), 
+                          position=position_dodge(width=0.25),
+                          size = 1.2, width = 0.20) +
+            scale_x_continuous(breaks = 1:4, labels = timepts) +
+            scale_y_continuous(breaks = seq(0, 50, 10)) +
+            coord_cartesian(ylim = c(0,50)) +
+            xlab("") +
+            ylab("Vaso-Inotropic Score\n") +
+            scale_color_manual(name = "", values = cols) +
+            scale_linetype_manual(name = "", values = ltys) +
+            theme_bw() +
+            theme(panel.grid.major = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom")
+g
+
+```
+
+```{r vis_box_subgroup_a, fig.width=10, fig.height=4}
+
+g <- ggplot(visli, aes(x = as.factor(variable), y = value)) +
+            facet_grid(.~group) +
+            geom_boxplot() +
+            # geom_line(data = visli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            scale_x_discrete(breaks = 1:4, labels = timepts) +
+            scale_y_continuous(breaks = seq(0, 50, 10)) +
+            coord_cartesian(ylim = c(0,50)) +
+            xlab("") +
+            ylab("Vaso-Inotropic Score\n") +
+            scale_color_manual(name = "", values = cols) +
+            scale_linetype_manual(name = "", values = ltys) +
+            theme_bw() +
+            theme(panel.grid.major.x = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom",
+                  axis.text.x = element_text(angle = 315, vjust = 1, hjust=0),
+                  plot.margin=unit(c(0.5,1,0.25,0.5),"cm"))
+g
+
+```
+
+```{r vis_box_subgroup_b}
+
+g <- ggplot(visli, aes(x = as.factor(variable), y = value, fill = group)) +
+            geom_boxplot() +
+            scale_fill_manual(name = "", values = cols) +
+            # geom_line(data = visli, aes(y = value, group=id), color = "gray", alpha = 0.5) +
+            scale_x_discrete(breaks = 1:4, labels = timepts) +
+            scale_y_continuous(breaks = seq(0, 50, 10)) +
+            coord_cartesian(ylim = c(0,50)) +
+            xlab("") +
+            ylab("Vaso-Inotropic Score\n") +
+            scale_color_manual(name = "", values = cols) +
+            scale_linetype_manual(name = "", values = ltys) +
+            theme_bw() +
+            theme(panel.grid.major.x = element_blank(),
+                  panel.grid.minor = element_blank(),
+                  legend.key.width = unit(3, "char"),
+                  legend.position = "bottom")
+g
+
+```
+
+```{r}
+
+### export dataset
+datc <- dat[,c("id", 
+               "group",  
+               "date_rvad_imp", 
+               "date_rvad_rem",
+               "tt_rem",
+               "dod",
+               "tt_death",
+               "date_lastfu",
+               "tt_lastfu",
+               "wean3",
+               "tt_wean3")]
+
+datc <- datc[order(datc$group, datc$wean3),]
+
+write.csv(datc, file = "20190227_tpd_data_cleaned.csv", row.names = FALSE)
+
+```
