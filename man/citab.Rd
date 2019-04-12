@@ -15,15 +15,15 @@ citab(msfit, times, timelab = "Time", events = NA, evlabs = NA,
 
 \item{timelab}{Character label for time. Default = "Time".}
 
-\item{events}{Character vector for event names (including state 0).}
+\item{events}{Character vector for event names (only include state 0 if state0 not NA).}
 
-\item{evlabs}{Character vector for event labels.}
+\item{evlabs}{Character vector for event labels (only include state 0 if state0 not NA).}
 
 \item{groups}{Character vector for groups as listed in dataset. Default = NA (no groups).}
 
 \item{grlabs}{Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).}
 
-\item{state0}{Character label for state 0. Default = NA (do not display estimates for state 0).}
+\item{state0}{Character event name for state 0. Default = NA (do not display estimates for state 0).}
 
 \item{ci.dec}{Number of decimal places to report for cumlative incidence estimates. Default = 2.}
 
