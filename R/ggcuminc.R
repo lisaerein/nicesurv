@@ -18,7 +18,8 @@
 #' @param yby Numeric for y axis major tick marks. Default = 0.1.
 #' @param xbrlabs Vector for alternative x axis labels. Default = NA.
 #' @param xextend Number to extend curves out to this timepoint if possible (if last event is not censored). Default = NA (do not extend).
-#' @param stack Character to indicate stacking events "events" or groups "groups". Default = "events".
+#' @param facet Character to indicate which variable to facet by, events "events" or groups "groups". Default = "groups".
+#' @param stack  Logical to indicate whether CI curves should be overlaid or stacked on top of one another. Default = FALSE (overlaid).
 #' @param state0 Character label for state 0. Default = NA (do not display estimates for state 0).
 #' @param cuminc.col Character vector for color of shaded cumulative incidence bands. Default = default colors.
 #' @param cuminc.lty Numeric vector for line type of cumulative incidence lines. Default = 1.
@@ -35,32 +36,33 @@
 #' @import cmprsk
 #' @export
 ggcuminc <- function(msfit,
-                    groups = NA,
-                    grlabs = NA,
-                    grname = " ",
-                    events = NA,
-                    evlabs = NA,
-                    evtitle = "Event",
-                    perc = FALSE,
-                    xlab = "Time",
-                    ylab = "Probability",
-                    xlim = NA,
-                    ylim = c(0,1),
-                    xby = NA,
-                    yby = 0.1,
-                    xbrlabs = NA,
-                    xextend = NA,
-                    stack = "events",
-                    state0 = "Healthy",
-                    cuminc.col = NA,
-                    cuminc.lty = NA,
-                    cuminc.size = 1.5,
-                    step = TRUE,
-                    main = "",
-                    graystest = FALSE,
-                    df = NA,
-                    timevar = NA,
-                    eventvar = NA){
+                     groups = NA,
+                     grlabs = NA,
+                     grname = " ",
+                     events = NA,
+                     evlabs = NA,
+                     evtitle = "Event",
+                     perc = FALSE,
+                     xlab = "Time",
+                     ylab = "Probability",
+                     xlim = NA,
+                     ylim = c(0,1),
+                     xby = NA,
+                     yby = 0.1,
+                     xbrlabs = NA,
+                     xextend = NA,
+                     facet = "groups",
+                     stack = FALSE,
+                     state0 = "Healthy",
+                     cuminc.col = NA,
+                     cuminc.lty = NA,
+                     cuminc.size = 1.5,
+                     step = TRUE,
+                     main = "",
+                     graystest = FALSE,
+                     df = NA,
+                     timevar = NA,
+                     eventvar = NA){
 
     ### error checking
     if (graystest){
@@ -73,8 +75,6 @@ ggcuminc <- function(msfit,
             }
         }
     }
-
-    if (is.na(stack) | !(stack %in% c("events", "groups"))) stack <- "events"
 
     est <- summary(msfit, censored = T)
 
@@ -101,8 +101,8 @@ ggcuminc <- function(msfit,
         xlim <- c(xmin, xmax)
         if ( is.na(xby)) xbrs <- pretty(xlim, 10)
         if (!is.na(xby)) xbrs <- seq(xmin, xmax, by = xby)
-        xmin_exp <- xmin - (0.01*diff(xlim))
-        xmax_exp <- xmax + (0.01*diff(xlim))
+        xmin_exp <- xmin - (0.02*diff(xlim))
+        xmax_exp <- xmax + (0.02*diff(xlim))
     }
     if (sum(is.na(xlim)) > 0) {
         xmin <- 0
@@ -110,20 +110,30 @@ ggcuminc <- function(msfit,
         xlim <- c(xmin, xmax)
         if ( is.na(xby)) xbrs <- pretty(xlim, 10)
         if (!is.na(xby)) xbrs <- seq(xmin, xmax, by = xby)
-        xmin_exp <- xmin - (0.01*diff(xlim))
-        xmax_exp <- xmax + (0.01*diff(xlim))
+        xmin_exp <- xmin - (0.02*diff(xlim))
+        xmax_exp <- xmax + (0.02*diff(xlim))
     }
     if (length(xbrlabs) == 1 & is.na(xbrlabs[1])) xbrlabs <- xbrs
 
-    times <- c(xmin, unique(est$time),xmax)
+    times <- unique(c(xmin, est$time, xmax))
+    times <- times[order(times)]
 
-    est <- summary(msfit, times = times)
+    est <- summary(msfit, times = times, summary = T)
 
     probs <- data.frame(est$pstate)
     names(probs) <- c(est$states[1:(length(est$states)-1)], state0)
 
+    lower <- data.frame(est$lower)
+    names(lower) <- paste(c(est$states[1:(length(est$states)-1)], state0), "_lower", sep="")
+
+    upper <- data.frame(est$upper)
+    names(upper) <- paste(c(est$states[1:(length(est$states)-1)], state0), "_upper", sep="")
+
     ### is model stratified or not?
     by <- ifelse(is.null(msfit$strata) == TRUE, NA, names(msfit$strata)[1])
+
+    if ( is.na(by) & (is.na(facet) | facet != "events")) facet <- "none"
+    if (!is.na(by) & (is.na(facet) | !(facet %in% c("events", "groups")))) facet <- "events"
 
     if (!is.na(by)){
 
@@ -133,6 +143,8 @@ ggcuminc <- function(msfit,
                           "time" = c(est$time),
                           "nevents" = apply(est$n.event, 1, function(x) sum(x)),
                           rbind(probs),
+                          rbind(lower),
+                          rbind(upper),
                           stringsAsFactors = FALSE)
 
         if (is.numeric(xextend)){
@@ -166,7 +178,7 @@ ggcuminc <- function(msfit,
             res_l2 <- ddply(res_l,
                             c("event","group"),
                             mutate,
-                            time_l = (lead(time,1)- 1e-9))
+                            time_l = (lead(time, 1) - 1e-9))
         }
         if (!step){
             res_l2 <- ddply(res_l,
@@ -182,10 +194,21 @@ ggcuminc <- function(msfit,
         res_l <- subset(res_l, time >= 0)
         res_l <- res_l[order(res_l$group, res_l$event, res_l$time),]
         res_l <- res_l[!duplicated(res_l),]
+
+        low_l <- subset(res_l, grepl("_lower", event))
+        upp_l <- subset(res_l, grepl("_upper", event))
+        res_l <- subset(res_l, !grepl("_lower|_upper", event))
+
+        low_l$event <- droplevels(low_l$event)
+        upp_l$event <- droplevels(upp_l$event)
+        res_l$event <- droplevels(res_l$event)
     }
     if (is.na(by)){
-        res <- data.frame("time" = c(est$time),
-                          rbind(probs))
+        res <- data.frame("time" = c(est$time)
+                          ,rbind(probs)
+                          ,rbind(lower)
+                          ,rbind(upper)
+                          )
 
         if (is.numeric(xextend)){
             ### get number of events at last timepoint
@@ -206,7 +229,7 @@ ggcuminc <- function(msfit,
             res_l2 <- ddply(res_l,
                             "event",
                             mutate,
-                            time_l = (lead(time,1)- 1e-9))
+                            time_l = (lead(time, 1) - 1e-9))
         }
         if (!step){
             res_l2 <- ddply(res_l,
@@ -220,6 +243,14 @@ ggcuminc <- function(msfit,
         names(new) <- names(old)
         res_l <- rbind(old,new)
         res_l <- res_l[!duplicated(res_l),]
+
+        low_l <- subset(res_l, grepl("_lower", event))
+        upp_l <- subset(res_l, grepl("_upper", event))
+        res_l <- subset(res_l, !grepl("_lower|_upper", event))
+
+        low_l$event <- droplevels(low_l$event)
+        upp_l$event <- droplevels(upp_l$event)
+        res_l$event <- droplevels(res_l$event)
     }
 
     ## check if input events/labels are valid and apply if so
@@ -235,6 +266,12 @@ ggcuminc <- function(msfit,
     res_l$event <- factor(res_l$event,
                           levels = events,
                           labels = evlabs)
+    low_l$event <- factor(low_l$event,
+                          levels = paste(events, "_lower", sep=""),
+                          labels = evlabs)
+    upp_l$event <- factor(upp_l$event,
+                          levels = paste(events, "_upper", sep=""),
+                          labels = evlabs)
 
     ## check if input groups/labels are valid and apply if so
     if (!is.na(by)){
@@ -243,6 +280,8 @@ ggcuminc <- function(msfit,
         gr.name <-  unlist(strsplit(names(msfit$strata[1]), '='))[1]
 
         res_l$group <- as.character(unlist(lapply(res_l$group, function(x) strsplit(x, '=')[[1]][2])))
+        low_l$group <- as.character(unlist(lapply(low_l$group, function(x) strsplit(x, '=')[[1]][2])))
+        upp_l$group <- as.character(unlist(lapply(upp_l$group, function(x) strsplit(x, '=')[[1]][2])))
 
         # check group names (if not NA), remove group names if invalid
         if (!is.na(groups[1])) {
@@ -256,18 +295,31 @@ ggcuminc <- function(msfit,
         res_l$group <- factor(res_l$group,
                               levels = groups,
                               labels = grlabs)
-
-        # estlabs <- levels(est$strata)
-        # estlabs <- gsub(paste(by, "=", sep=""), "", estlabs)
-
+        low_l$group <- factor(low_l$group,
+                              levels = groups,
+                              labels = grlabs)
+        upp_l$group <- factor(upp_l$group,
+                              levels = groups,
+                              labels = grlabs)
     }
 
-    cols <- c("#ECF0F1","#D2B4DE","#76D7C4","#F8C471","#F7DC6F","#EC7063","#A6DBFF")
-    ltys <- rep(1, length(groups))
-    if (!is.na(cuminc.col[1])) cols <- cuminc.col
-    if (!is.na(cuminc.lty[1])) ltys <- cuminc.lty
+    low_l$prob[low_l$time == 0] <- 0
+    upp_l$prob[low_l$time == 0] <- 0
 
-    if (stack == "events"){
+    low_l <- subset(low_l, is.finite(prob))
+    upp_l <- subset(upp_l, is.finite(prob))
+
+
+    if (stack) nvals <- length(events)
+    if (!stack & (facet == "groups" | facet == "none")) nvals <- length(events)-1
+    if (!stack & facet == "events") nvals <- length(groups)
+
+    cols <- rep(c("#ECF0F1","#D2B4DE","#76D7C4","#F8C471","#F7DC6F","#EC7063","#A6DBFF"), length = nvals)
+    ltys <- rep(1, length = nvals)
+    if (sum(is.na(cuminc.col[1])) == 0 & length(cuminc.col) >= nvals) cols <- rep(cuminc.col, length = nvals)
+    if (sum(is.na(cuminc.lty[1])) == 0 & length(cuminc.col) >= nvals) ltys <- rep(cuminc.lty, length = nvals)
+
+    if (stack){
         g <- ggplot(data = res_l, aes(x = time, y = prob)) +
                     geom_area(aes(fill = event, color = event)) +
                     scale_fill_manual(name = evtitle , values = cols, labels = evlabs) +
@@ -277,7 +329,7 @@ ggcuminc <- function(msfit,
                           panel.grid.minor = element_blank(),
                           strip.background = element_blank(),
                           legend.key.width=unit(2,"line")) +
-                    scale_x_continuous(breaks = xbrs, expand = c(0.01, 0), labels = xbrlabs) +
+                    scale_x_continuous(breaks = xbrs, expand = c(0.02, 0), labels = xbrlabs) +
                     coord_cartesian(xlim = xlim, ylim = ylim, clip = "on") +
                     xlab(xlab) +
                     ylab(ylab) +
@@ -285,25 +337,77 @@ ggcuminc <- function(msfit,
         if (!perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0))
         if ( perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0),
                                                labels = scales::percent_format(accuracy = 1))
-        if (!is.na(by)){
-            g <- g + facet_grid(.~group)
-        }
+
+        if (!is.na(by) & facet == "groups") g <- g + facet_grid(.~group)
     }
 
-    if (stack == "groups"){
+    if (!stack){
+        g <- ggplot(data = subset(res_l, event != evlabs[which(events == state0)]), aes(x = time, y = prob)) +
+                    geom_step(size = cuminc.size, aes(colour = event)) +
+                    geom_step(data = subset(low_l, event != evlabs[which(events == state0)]), aes(color = event), linetype = 2) +
+                    geom_step(data = subset(upp_l, event != evlabs[which(events == state0)]), aes(color = event), linetype = 2) +
+                    scale_linetype_manual(name = evtitle ,
+                                          values = ltys,
+                                          breaks = evlabs[which(events != state0)]) +
+                    scale_color_manual(name = evtitle,
+                                       values = cols,
+                                       breaks = evlabs[which(events != state0)]) +
+                    theme_bw() +
+                    theme(panel.grid.major = element_blank(),
+                          panel.grid.minor = element_blank(),
+                          strip.background = element_blank(),
+                          legend.key.width=unit(2,"line")) +
+                    scale_x_continuous(breaks = xbrs, expand = c(0.02, 0), labels = xbrlabs) +
+                    coord_cartesian(xlim = xlim, ylim = ylim, clip = "on") +
+                    xlab(xlab) +
+                    ylab(ylab) +
+                    ggtitle(main)
+        if (!perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0))
+        if ( perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0),
+                                               labels = scales::percent_format(accuracy = 1))
 
-        if (is.na(by)){
+        if (!is.na(by) & facet == "groups") g <- g + facet_wrap(~group, nrow = 1)
+
+        if (is.na(by) & facet == "events") {
+            g <- g +
+                 facet_wrap(~event, nrow = 1) +
+                 scale_color_manual(name = evtitle, values = rep(cols[1], length(evlabs[which(events != state0)]))) +
+                 scale_linetype_manual(name = evtitle, values = rep(1, length(evlabs[which(events != state0)]))) +
+                 theme(legend.position = "none")
+
+        }
+
+        if (!is.na(by) & facet == "events"){
+
+            if (graystest){
+                gtest <- cuminc(df[,timevar], df[,eventvar], group=df[,gr.name])$Tests[,"pv"]
+                p <- data.frame(gtest)
+                p$event <- rownames(p)
+                p$event <- gsub(" ", ".", p$event)
+                p$event <- factor(p$event,
+                                  levels = events,
+                                  labels = evlabs)
+                p <- subset(p, event != evlabs[which(events == state0)])
+                p$event <- droplevels(p$event)
+                p$x <- xmin
+                p$y <- ymax
+                p$pval <- paste("Gray's test p =", sprintf("%4.3f", p$gtest))
+                p$pval[p$gtest < 0.001] <- "Gray's test p < 0.001"
+            }
+
             g <- ggplot(data = subset(res_l, event != evlabs[which(events == state0)]), aes(x = time, y = prob)) +
-                        geom_step(size = cuminc.size, colour = cols[1], linetype = ltys[1]) +
-                        # scale_linetype_manual(name = grname, values = ltys, labels = grlabs) +
-                        # scale_color_manual(name = grname, values = cols, labels = grlabs) +
+                        geom_step(aes(color = group, linetype = group), size = cuminc.size) +
+                        geom_step(data = subset(low_l, event != evlabs[which(events == state0)]), aes(color = group), linetype = 2) +
+                        geom_step(data = subset(upp_l, event != evlabs[which(events == state0)]), aes(color = group), linetype = 2) +
+                        scale_linetype_manual(name = grname, values = ltys, labels = grlabs) +
+                        scale_color_manual(name = grname, values = cols, labels = grlabs) +
                         facet_wrap(~event, nrow = 1) +
                         theme_bw() +
                         theme(panel.grid.major = element_blank(),
                               panel.grid.minor = element_blank(),
                               strip.background = element_blank(),
                               legend.key.width=unit(2,"line")) +
-                        scale_x_continuous(breaks = xbrs, expand = c(0.01, 0), labels = xbrlabs) +
+                        scale_x_continuous(breaks = xbrs, expand = c(0.02, 0), labels = xbrlabs) +
                         coord_cartesian(xlim = xlim, ylim = ylim, clip = "on") +
                         xlab(xlab) +
                         ylab(ylab) +
@@ -311,43 +415,10 @@ ggcuminc <- function(msfit,
             if (!perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0))
             if ( perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0),
                                                    labels = scales::percent_format(accuracy = 1))
+            if (graystest) g <- g + geom_text(data = p, aes(x = x, y = y, label = pval), hjust = 0, vjust = 1)
         }
 
-        if (!is.na(by)){
-        if (graystest){
-            gtest <- cuminc(df[,timevar], df[,eventvar], group=df[,gr.name])$Tests[,"pv"]
-            p <- data.frame(gtest)
-            p$event <- rownames(p)
-            p$event <- factor(p$event,
-                              levels = events,
-                              labels = evlabs)
-            p <- subset(p, event != evlabs[which(events == state0)])
-            p$x <- xmin
-            p$y <- ymax
-            p$pval <- paste("Gray's test p =", sprintf("%4.3f", p$gtest))
-            p$pval[p$gtest < 0.001] <- "Gray's test p < 0.001"
-        }
-
-        g <- ggplot(data = subset(res_l, event != evlabs[which(events == state0)]), aes(x = time, y = prob)) +
-                geom_step(aes(color = group, linetype = group), size = cuminc.size) +
-                scale_linetype_manual(name = grname, values = ltys, labels = grlabs) +
-                   scale_color_manual(name = grname, values = cols, labels = grlabs) +
-                facet_wrap(~event, nrow = 1) +
-                theme_bw() +
-                theme(panel.grid.major = element_blank(),
-                      panel.grid.minor = element_blank(),
-                      strip.background = element_blank(),
-                      legend.key.width=unit(2,"line")) +
-                scale_x_continuous(breaks = xbrs, expand = c(0.01, 0), labels = xbrlabs) +
-                coord_cartesian(xlim = xlim, ylim = ylim, clip = "on") +
-                xlab(xlab) +
-                ylab(ylab) +
-                ggtitle(main)
-        if (!perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0))
-        if ( perc) g <- g + scale_y_continuous(breaks = ybrs, expand = c(0.01, 0),
-                                               labels = scales::percent_format(accuracy = 1))
-        if (graystest) g <- g + geom_text(data = p, aes(x = x, y = y, label = pval), hjust = 0, vjust = 1)
-        }
     }
+
     return(g)
 }
