@@ -1,4 +1,4 @@
-ggsurv example
+nicesurv examples
 ================
 Lisa Rein
 2019-06-12
@@ -15,7 +15,6 @@ packs <- c("knitr"
            )
 
 install <- lapply(packs, function(x) require(x, character.only = T))
-
 
 install_github("lisaerein/nicesurv")
 
@@ -441,7 +440,7 @@ Exp.
 </tr>
 </tbody>
 </table>
-### nicecoxph formats regression results from coxph models
+### 'nicecoxph' formats regression results from coxph models
 
 #### Multiple regression
 

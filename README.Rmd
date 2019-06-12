@@ -1,5 +1,5 @@
 ---
-title: "ggsurv example"
+title: "nicesurv examples"
 author: "Lisa Rein"
 date: "`r Sys.Date()`"
 output: github_document
@@ -37,7 +37,7 @@ help_console <- function(topic, format=c("text", "html", "latex", "Rd"),
 
 ### Install packages
 
-```{r }
+```{r}
 
 packs <- c("knitr"
            ,"survival"
@@ -48,7 +48,6 @@ packs <- c("knitr"
            )
 
 install <- lapply(packs, function(x) require(x, character.only = T))
-
 
 install_github("lisaerein/nicesurv")
 
@@ -186,7 +185,7 @@ ggsurv(sfit = mysfit2,
 
 ### 'medtable' generates a table for median survival estimates
 
-```{r results='asis'}
+```{r}
 
 mt <- medtab(mysfit,
              printorig = FALSE)
@@ -200,7 +199,7 @@ mt <- medtab(mysfit,
 
 ### 'survtab' generates a table of survival estimates 
 
-```{r results='asis'}
+```{r}
 
 st <- survtab(mysfit,
               times = c(0,30,120,360,500),
@@ -211,7 +210,7 @@ st <- survtab(mysfit,
 
 ```
 
-### nicecoxph formats regression results from coxph models
+### 'nicecoxph' formats regression results from coxph models
 
 #### Multiple regression
 
