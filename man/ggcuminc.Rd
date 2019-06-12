@@ -7,10 +7,10 @@
 ggcuminc(msfit, groups = NA, grlabs = NA, grname = " ",
   events = NA, evlabs = NA, evtitle = "Event", perc = FALSE,
   xlab = "Time", ylab = "Probability", xlim = NA, ylim = c(0, 1),
-  xby = NA, yby = 0.1, xbrlabs = NA, xextend = NA,
-  stack = "events", state0 = "Healthy", cuminc.col = NA,
-  cuminc.lty = NA, cuminc.size = 1.5, step = TRUE, main = "",
-  graystest = FALSE, df = NA, timevar = NA, eventvar = NA)
+  xby = NA, yby = 0.1, xbrlabs = NA, stack = "events",
+  state0 = "Healthy", cuminc.col = NA, cuminc.lty = NA,
+  cuminc.size = 1.5, step = TRUE, main = "", graystest = FALSE,
+  df = NA, timevar = NA, eventvar = NA)
 }
 \arguments{
 \item{msfit}{survfit object of type "mstate" (REQUIRED).}
@@ -42,8 +42,6 @@ ggcuminc(msfit, groups = NA, grlabs = NA, grname = " ",
 \item{yby}{Numeric for y axis major tick marks. Default = 0.1.}
 
 \item{xbrlabs}{Vector for alternative x axis labels. Default = NA.}
-
-\item{xextend}{Number to extend curves out to this timepoint if possible (if last event is not censored). Default = NA (do not extend).}
 
 \item{stack}{Character to indicate stacking events "events" or groups "groups". Default = "events".}
 
