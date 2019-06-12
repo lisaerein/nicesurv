@@ -2,7 +2,7 @@
 title: "ggsurv example"
 author: "Lisa Rein"
 date: "`r Sys.Date()`"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -211,5 +211,30 @@ st <- survtab(mysfit,
 
 ```
 
+### nicecoxph formats regression results from coxph models
 
+#### Multiple regression
+
+```{r}
+
+coxmod <- coxph(Surv(time, status) ~ trt + celltype + karno, data= veteran)
+
+coxtbl <- nicecoxph(coxmod)
+
+```
+
+#### Univariate regression
+
+```{r}
+
+coxmod <- coxph(Surv(time, status) ~ trt + celltype + karno, data= veteran)
+
+coxtbl <- nicecoxph(df = veteran,
+                    covs = c("trt", "celltype", "karno"),
+                    ttevent = "time",
+                    event = "status",
+                    type3 = TRUE,
+                    regtype = "uni")
+          
+```
 
