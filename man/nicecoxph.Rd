@@ -46,7 +46,7 @@ nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
 
 \item{est.dec}{Numeric. Number of decimal places for estimates. Default is 2.}
 
-\item{ci.dec}{Numeric. Number of decimal places for 95% confidence interval. Default is 2.}
+\item{ci.dec}{Numeric. Number of decimal places for confidence interval. Default is 2.}
 
 \item{pval.dec}{Numeric. Number of decimal places for pvalues. Must be an integer from 1 to 4. Default is 3.}
 
@@ -59,8 +59,8 @@ nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
 \item{footer}{Logical. If TRUE, table will include a footnote with model details, nobs, R2. Default is TRUE.}
 }
 \description{
-This function creates a nice looking table of regression results for a coxph model. 
-Input either a coxph object or dataframe, event variable, time variable, vector of covariates, and type of analysis (univariate or multiple regression). 
+This function creates a nice looking table of regression results for a coxph model.
+Input either a coxph object or dataframe, event variable, time variable, vector of covariates, and type of analysis (univariate or multiple regression).
 The function returns a dataframe of formatted regression results and prints the results table using htmlTable.
 }
 \keyword{cox}
