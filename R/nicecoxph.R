@@ -222,7 +222,7 @@ nicecoxph <- function(fit = NA,
         # create a duplicate row for header - just for factors
         coef_tbl2 <- coef_tbl2[rep(seq_len(nrow(coef_tbl2)), each=2),]
         coef_tbl2$dup <- 0
-        coef_tbl2$dup[grepl(".1", row.names(coef_tbl2))] <- 1
+        coef_tbl2$dup[grepl(".1", row.names(coef_tbl2), fixed = T)] <- 1
         coef_tbl2 <- subset(coef_tbl2, dup == 0 | (vtype %in% c("character", "factor", "interaction") & vseq == 1))
 
         coef_tbl2 <- coef_tbl2[order(coef_tbl2$order, -coef_tbl2$dup),]
