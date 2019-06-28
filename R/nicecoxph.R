@@ -391,9 +391,14 @@ nicecoxph <- function(fit = NA,
 
             tblj <- tblfun(fitj)
 
+            vnamej = tblj[["vnames"]]
+            if (!is.na(labels[1]) & sum(!is.na(labels)) == length(covs)){
+                vnamej <- labels[j]
+            }
+
             tbl_uni    <- rbind(tbl_uni   , tblj[["tbl"]])
             vrows_uni  <- c(vrows_uni , tblj[["vrows"]])
-            vnames_uni <- c(vnames_uni, tblj[["vnames"]])
+            vnames_uni <- c(vnames_uni, vnamej)
             nobs_uni <- c(nobs_uni, paste("<br>(N = ", fitj$n,
                                           ", ",
                                           "Events = ", fitj$nevent, ")", sep=""))
