@@ -6,7 +6,8 @@
 \usage{
 citab(msfit, times, timelab = "Time", events = NA, evlabs = NA,
   groups = NA, grlabs = NA, state0 = NA, ci.dec = 2,
-  perc = FALSE, color = "#EEEEEE", printorig = TRUE)
+  perc = FALSE, color = "#EEEEEE", kable = TRUE, htmlTable = FALSE,
+  printorig = TRUE)
 }
 \arguments{
 \item{msfit}{survfit object of type "mstate" (REQUIRED).}
@@ -31,11 +32,15 @@ citab(msfit, times, timelab = "Time", events = NA, evlabs = NA,
 
 \item{color}{Character Hex color to use for htmlTable striping. Default = "#EEEEEE" (light grey).}
 
+\item{kable}{Logical. Indicator to use kable to display table. Default = TRUE.}
+
+\item{htmlTable}{Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.}
+
 \item{printorig}{Logical indicator to print original summary of ms-survfit object for checking purposes. Default = TRUE.}
 }
 \description{
 This function creates a summary table from a survfit object of type "mstate" including cumulative incidence estimates with CIs.
-It returns a dataframe and prints an html table by default for use in R markdown documents.
+It returns a dataframe and prints a table using kable or htmlTable.
 }
 \keyword{Lisa}
 \keyword{consulting}

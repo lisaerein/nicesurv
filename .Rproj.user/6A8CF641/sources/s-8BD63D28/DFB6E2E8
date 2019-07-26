@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1564165804408.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4204958741",
+    "id" : "DFB6E2E8",
+    "lastKnownWriteTime" : 1564166000,
+    "last_content_update" : 1564166000887,
+    "path" : "~/GitHub/nicesurv/R/citab.R",
+    "project_path" : "R/citab.R",
+    "properties" : {
+        "cursorPosition" : "92,0",
+        "scrollLine" : "84"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

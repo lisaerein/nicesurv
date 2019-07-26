@@ -9,7 +9,7 @@ nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
   strata = NA, regtype = "uni", type2 = FALSE, type3 = FALSE,
   phtest = FALSE, labels = NA, estname = NA, refcat = FALSE,
   est.dec = 2, ci.dec = 2, pval.dec = 3, color = "#EEEEEE",
-  htmlTable = TRUE, title = "", footer = TRUE)
+  kable = TRUE, htmlTable = FALSE, title = "", footer = TRUE)
 }
 \arguments{
 \item{fit}{coxph model object [fit or df/event/ttevent/covs are REQUIRED].}
@@ -52,7 +52,9 @@ nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
 
 \item{color}{Character. Color to use for htmlTable striping. Default is "#EEEEEE" (light grey). Use "white" for no striping.}
 
-\item{htmlTable}{Logical. If TRUE, the table will be optimized for html output. Default is TRUE.}
+\item{kable}{Logical. Indicator to use kable to display table. Default = TRUE.}
+
+\item{htmlTable}{Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.}
 
 \item{title}{Character. Optional title above table. Default is "".}
 
@@ -61,7 +63,7 @@ nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
 \description{
 This function creates a nice looking table of regression results for a coxph model.
 Input either a coxph object or dataframe, event variable, time variable, vector of covariates, and type of analysis (univariate or multiple regression).
-The function returns a dataframe of formatted regression results and prints the results table using htmlTable.
+The function returns a dataframe of formatted regression results and prints the results table using kable or htmlTable.
 }
 \keyword{cox}
 \keyword{coxph}

@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1564156305106.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "DE4E8712",
+    "lastKnownWriteTime" : 1564165775,
+    "last_content_update" : 1564165775543,
+    "path" : "Z:/consulting/Bhagavatula_Pradeep/Sulim_Igor/r_code/Bhaga_Sulim_analysis.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "196,34",
+        "scrollLine" : "176"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

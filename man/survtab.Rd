@@ -5,7 +5,8 @@
 \title{Lisa's Survival Summary Table}
 \usage{
 survtab(sfit, times, timelab = "Time", groups = NA, grlabs = NA,
-  surv.dec = 2, perc = FALSE, color = "#EEEEEE", printorig = TRUE)
+  surv.dec = 2, perc = FALSE, color = "#EEEEEE", printorig = TRUE,
+  kable = TRUE, htmlTable = FALSE)
 }
 \arguments{
 \item{sfit}{Survfit object (REQUIRED).}
@@ -25,10 +26,14 @@ survtab(sfit, times, timelab = "Time", groups = NA, grlabs = NA,
 \item{color}{Character Hex color to use for htmlTable striping. Default = "#EEEEEE" (light grey).}
 
 \item{printorig}{Logical indicator to print original summary of survfit object for checking purposes. Default = TRUE.}
+
+\item{kable}{Logical. Indicator to use kable to display table. Default = TRUE.}
+
+\item{htmlTable}{Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.}
 }
 \description{
 This function creates a summary table from a survfit object including survival estimates with CIs, number of events, and number at risk.
-It returns a dataframe and prints an html table by default for use in R markdown documents.
+It returns a dataframe and prints a table using kable or htmlTable.
 }
 \keyword{Lisa}
 \keyword{consulting}

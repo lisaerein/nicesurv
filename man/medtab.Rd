@@ -5,7 +5,8 @@
 \title{Lisa's Median Survival Table}
 \usage{
 medtab(sfit, groups = NA, grlabs = NA, grcolname = "Group",
-  med.dec = 2, medlab = "Median survival time", printorig = TRUE)
+  med.dec = 2, medlab = "Median survival time", printorig = TRUE,
+  kable = TRUE, htmlTable = FALSE)
 }
 \arguments{
 \item{sfit}{Survfit object (REQUIRED).}
@@ -21,10 +22,14 @@ medtab(sfit, groups = NA, grlabs = NA, grcolname = "Group",
 \item{medlab}{Character label for median and CI columns. Default = "Median survival time".}
 
 \item{printorig}{Logical indicator to print original summary of survfit object for checking purposes. Default = TRUE.}
+
+\item{kable}{Logical. Indicator to use kable to display table. Default = TRUE.}
+
+\item{htmlTable}{Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.}
 }
 \description{
 This function creates a summary table from a survfit object including median survival estimates with CIs.
-It returns a dataframe and prints an html table by default for use in R markdown documents.
+It returns a dataframe and prints a table using kable or htmlTable.
 }
 \keyword{Lisa}
 \keyword{consulting}
