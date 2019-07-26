@@ -1,11 +1,15 @@
 nicesurv examples
 ================
 Lisa Rein
-2019-06-12
+2019-07-26
 
 ### Install packages
 
 ``` r
+rm(list =ls())
+
+options(knitr.kable.NA = '.')
+
 packs <- c("knitr"
            ,"survival"
            ,"devtools"
@@ -47,7 +51,7 @@ mysfit <- survfit(Surv(time, status) ~ trt, data = veteran)
 plot(mysfit)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ### Generate a default ggsurv KM plot
 
@@ -55,7 +59,7 @@ plot(mysfit)
 ggsurv(sfit = mysfit)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ### Add ggsurv optional parameters:
 
@@ -70,7 +74,7 @@ ggsurv(sfit = mysfit,
        surv.lty = c(2,1))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 #### Change the x axis limits/breaks to show 1 year and change y axis to percentage scale
 
@@ -87,7 +91,7 @@ ggsurv(sfit = mysfit,
        perc = TRUE)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 #### Remove 95% CI shading
 
@@ -105,7 +109,7 @@ ggsurv(sfit = mysfit,
        ci = FALSE)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 #### Add a risk table
 
@@ -127,7 +131,7 @@ ggsurv(sfit = mysfit,
        risktab.times = c(0,30,60,120,180,240,300,360))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-8-1.png)
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 #### Create a non-stratified survival curve with risk table
 
@@ -149,63 +153,22 @@ ggsurv(sfit = mysfit2,
        risktab.times = seq(0,360*3,90))
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
-### Other functions in the 'nicesurv' R package
+### Other functions in the ‘nicesurv’ R package
 
-### 'medtable' generates a table for median survival estimates
+### ‘medtable’ generates a table for median survival estimates
 
 ``` r
 mt <- medtab(mysfit,
              printorig = FALSE)
 ```
 
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
-<thead>
-<tr>
-<th style="border-top: 2px solid grey;">
-</th>
-<th colspan="2" style="font-weight: 900; border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Median survival time
-</th>
-</tr>
-<tr>
-<th style="font-weight: 900; border-bottom: 1px solid grey; text-align: center;">
-Group
-</th>
-<th style="border-bottom: 1px solid grey; text-align: center;">
-Median
-</th>
-<th style="border-bottom: 1px solid grey; text-align: center;">
-95% CI
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">
-1
-</td>
-<td style="padding-left: 1em; padding-right: 1em; text-align: center;">
-103.00
-</td>
-<td style="padding-left: 1em; padding-right: 1em; text-align: center;">
-\[59.00, 132.00\]
-</td>
-</tr>
-<tr>
-<td style="border-bottom: 2px solid grey; text-align: left;">
-2
-</td>
-<td style="padding-left: 1em; padding-right: 1em; border-bottom: 2px solid grey; text-align: center;">
-52.50
-</td>
-<td style="padding-left: 1em; padding-right: 1em; border-bottom: 2px solid grey; text-align: center;">
-\[44.00, 95.00\]
-</td>
-</tr>
-</tbody>
-</table>
+| Group | Median |      95% CI       |
+| :---- | :----: | :---------------: |
+| 1     | 103.00 | \[59.00, 132.00\] |
+| 2     | 52.50  | \[44.00, 95.00\]  |
+
 ``` r
 mt <- medtab(mysfit,
              groups = c(2,1),
@@ -213,53 +176,12 @@ mt <- medtab(mysfit,
              printorig = FALSE)
 ```
 
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
-<thead>
-<tr>
-<th style="border-top: 2px solid grey;">
-</th>
-<th colspan="2" style="font-weight: 900; border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Median survival time
-</th>
-</tr>
-<tr>
-<th style="font-weight: 900; border-bottom: 1px solid grey; text-align: center;">
-Group
-</th>
-<th style="border-bottom: 1px solid grey; text-align: center;">
-Median
-</th>
-<th style="border-bottom: 1px solid grey; text-align: center;">
-95% CI
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">
-Experimental
-</td>
-<td style="padding-left: 1em; padding-right: 1em; text-align: center;">
-52.50
-</td>
-<td style="padding-left: 1em; padding-right: 1em; text-align: center;">
-\[44.00, 95.00\]
-</td>
-</tr>
-<tr>
-<td style="border-bottom: 2px solid grey; text-align: left;">
-Standard
-</td>
-<td style="padding-left: 1em; padding-right: 1em; border-bottom: 2px solid grey; text-align: center;">
-103.00
-</td>
-<td style="padding-left: 1em; padding-right: 1em; border-bottom: 2px solid grey; text-align: center;">
-\[59.00, 132.00\]
-</td>
-</tr>
-</tbody>
-</table>
-### 'survtab' generates a table of survival estimates
+| Group        | Median |      95% CI       |
+| :----------- | :----: | :---------------: |
+| Experimental | 52.50  | \[44.00, 95.00\]  |
+| Standard     | 103.00 | \[59.00, 132.00\] |
+
+### ‘survtab’ generates a table of survival estimates
 
 ``` r
 st <- survtab(mysfit,
@@ -270,177 +192,22 @@ st <- survtab(mysfit,
               printorig = FALSE)
 ```
 
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
-<thead>
-<tr>
-<th style="font-weight: 900; border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Time
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Survival
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-N events
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-N at risk
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td colspan="4" style="font-weight: 900; background-color: #eeeeee;">
-Std.
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="background-color: #eeeeee; text-align: left;">
-  0
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-1.00 \[1.00, 1.00\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-0
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-69
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="background-color: #eeeeee; text-align: left;">
-  30
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-0.72 \[0.63, 0.84\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-19
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-50
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="background-color: #eeeeee; text-align: left;">
-  120
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-0.41 \[0.31, 0.54\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-21
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-26
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="background-color: #eeeeee; text-align: left;">
-  360
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-0.07 \[0.03, 0.18\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-20
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-4
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="background-color: #eeeeee; text-align: left;">
-  500
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-0.02 \[0.00, 0.12\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-3
-</td>
-<td style="padding-left: 5em; padding-right: 2em; background-color: #eeeeee; text-align: center;">
-1
-</td>
-</tr>
-<tr>
-<td colspan="4" style="font-weight: 900;">
-Exp.
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  0
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-1.00 \[1.00, 1.00\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-0
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-68
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  30
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-0.68 \[0.57, 0.80\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-22
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-47
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  120
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-0.28 \[0.19, 0.42\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-26
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-17
-</td>
-</tr>
-<tr>
-<td style="text-align: left;">
-  360
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-0.11 \[0.05, 0.23\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-10
-</td>
-<td style="padding-left: 5em; padding-right: 2em; text-align: center;">
-6
-</td>
-</tr>
-<tr>
-<td style="border-bottom: 2px solid grey; text-align: left;">
-  500
-</td>
-<td style="padding-left: 5em; padding-right: 2em; border-bottom: 2px solid grey; text-align: center;">
-0.05 \[0.02, 0.16\]
-</td>
-<td style="padding-left: 5em; padding-right: 2em; border-bottom: 2px solid grey; text-align: center;">
-3
-</td>
-<td style="padding-left: 5em; padding-right: 2em; border-bottom: 2px solid grey; text-align: center;">
-3
-</td>
-</tr>
-</tbody>
-</table>
-### 'nicecoxph' formats regression results from coxph models
+| Time        |      Survival       | N events | N at risk |
+| :---------- | :-----------------: | -------: | --------: |
+| <b>Std.<b/> |          .          |        . |         . |
+| 0           | 1.00 \[1.00, 1.00\] |        0 |        69 |
+| 30          | 0.72 \[0.63, 0.84\] |       19 |        50 |
+| 120         | 0.41 \[0.31, 0.54\] |       21 |        26 |
+| 360         | 0.07 \[0.03, 0.18\] |       20 |         4 |
+| 500         | 0.02 \[0.00, 0.12\] |        3 |         1 |
+| <b>Exp.<b/> |          .          |        . |         . |
+| 0           | 1.00 \[1.00, 1.00\] |        0 |        68 |
+| 30          | 0.68 \[0.57, 0.80\] |       22 |        47 |
+| 120         | 0.28 \[0.19, 0.42\] |       26 |        17 |
+| 360         | 0.11 \[0.05, 0.23\] |       10 |         6 |
+| 500         | 0.05 \[0.02, 0.16\] |        3 |         3 |
+
+### ‘nicecoxph’ formats regression results from coxph models
 
 #### Multiple regression
 
@@ -450,130 +217,17 @@ coxmod <- coxph(Surv(time, status) ~ trt + celltype + karno, data= veteran)
 coxtbl <- nicecoxph(coxmod)
 ```
 
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
-<thead>
-<tr>
-<td colspan="4" style="text-align: left;">
-</td>
-</tr>
-<tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Variable
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-aHR
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-95% CI
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-p-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td colspan="4" style="font-weight: 900; background-color: #eeeeee;">
-trt
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; text-align: left;">
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; text-align: center;">
-1.30
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; text-align: center;">
-\[0.88, 1.93\]
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; text-align: right;">
-0.193
-</td>
-</tr>
-<tr>
-<td colspan="4" style="font-weight: 900; background-color: #ffffff;">
-celltype
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-Smallcell vs. Squamous
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-2.28
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-\[1.35, 3.87\]
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-0.002
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-Adeno vs. Squamous
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-3.17
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-\[1.78, 5.65\]
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-&lt; 0.001
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-Large vs. Squamous
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-1.48
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-\[0.85, 2.58\]
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-0.162
-</td>
-</tr>
-<tr>
-<td colspan="4" style="font-weight: 900; background-color: #eeeeee;">
-karno
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: left;">
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: center;">
-0.97
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: center;">
-\[0.96, 0.98\]
-</td>
-<td style="padding-left: 2em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: right;">
-&lt; 0.001
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td colspan="4">
+| Variable               | aHR  |     95% CI     |  p-value |
+| :--------------------- | :--: | :------------: | -------: |
+| <b>trt<b/>             | 1.30 | \[0.88, 1.93\] |    0.193 |
+| <b>celltype<b/>        |  .   |       .        |        . |
+| Smallcell vs. Squamous | 2.28 | \[1.35, 3.87\] |    0.002 |
+| Adeno vs. Squamous     | 3.17 | \[1.78, 5.65\] | \< 0.001 |
+| Large vs. Squamous     | 1.48 | \[0.85, 2.58\] |    0.162 |
+| <b>karno<b/>           | 0.97 | \[0.96, 0.98\] | \< 0.001 |
+
 Multiple CoxPH Regression, N = 137, Events = 128
-</td>
-</tr>
-</tfoot>
-</table>
+
 #### Univariate regression
 
 ``` r
@@ -587,145 +241,11 @@ coxtbl <- nicecoxph(df = veteran,
                     regtype = "uni")
 ```
 
-<table class="gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
-<thead>
-<tr>
-<td colspan="5" style="text-align: left;">
-</td>
-</tr>
-<tr>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Variable
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-HR
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-95% CI
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Wald p-value
-</th>
-<th style="border-bottom: 1px solid grey; border-top: 2px solid grey; text-align: center;">
-Type III p
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td colspan="5" style="font-weight: 900; background-color: #eeeeee;">
-trt <br>(N = 137, Events = 128)
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; text-align: left;">
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; text-align: center;">
-1.02
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; text-align: center;">
-\[0.71, 1.45\]
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; text-align: right;">
-0.928
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; text-align: right;">
-0.928
-</td>
-</tr>
-<tr>
-<td colspan="5" style="font-weight: 900; background-color: #ffffff;">
-celltype <br>(N = 137, Events = 128)
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-&lt; 0.001
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-Smallcell vs. Squamous
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-2.71
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-\[1.65, 4.45\]
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-&lt; 0.001
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-Adeno vs. Squamous
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-3.13
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-\[1.76, 5.56\]
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-&lt; 0.001
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-</td>
-</tr>
-<tr style="background-color: #ffffff;">
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: left;">
-Large vs. Squamous
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-1.26
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: center;">
-\[0.73, 2.17\]
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-0.407
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #ffffff; text-align: right;">
-</td>
-</tr>
-<tr>
-<td colspan="5" style="font-weight: 900; background-color: #eeeeee;">
-karno <br>(N = 137, Events = 128)
-</td>
-</tr>
-<tr style="background-color: #eeeeee;">
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: left;">
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: center;">
-0.97
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: center;">
-\[0.96, 0.98\]
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: right;">
-&lt; 0.001
-</td>
-<td style="padding-left: 3em; padding-right: 1em; background-color: #eeeeee; border-bottom: 2px solid grey; text-align: right;">
-&lt; 0.001
-</td>
-</tr>
-</tbody>
-<tfoot>
-<tr>
-<td colspan="5">
-Univariate (unadjusted) CoxPH Regression
-</td>
-</tr>
-</tfoot>
-</table>
+| Variable                                |  HR  |     95% CI     | Wald p-value | Type III p |
+| :-------------------------------------- | :--: | :------------: | -----------: | ---------: |
+| <b>trt (N = 137, Events = 128)<b/>      | 1.02 | \[0.71, 1.45\] |        0.928 |      0.928 |
+| <b>celltype (N = 137, Events = 128)<b/> |  .   |       .        |            . |   \< 0.001 |
+| Smallcell vs. Squamous                  | 2.71 | \[1.65, 4.45\] |     \< 0.001 |          . |
+| Adeno vs. Squamous                      | 3.13 | \[1.76, 5.56\] |     \< 0.001 |          . |
+| Large vs. Squamous                      | 1.26 | \[0.73, 2.17\] |        0.407 |          . |
+| <b>karno (N = 137, Events = 128)<b/>    | 0.97 | \[0.96, 0.98\] |     \< 0.001 |   \< 0.001 |
