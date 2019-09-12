@@ -384,10 +384,12 @@ nicecoxph <- function(fit = NA,
 
             names(ftbl) <- head
 
+            if (title == "" & footer) title <- footnote
+
             print(
                 kable(x = ftbl,
                       row.names = FALSE,
-                      caption = footnote,
+                      caption = title,
                       align = alignr)
             )
         }
@@ -528,6 +530,8 @@ nicecoxph <- function(fit = NA,
             ftbl[headr,1] <- paste("<b>", ftbl[headr,1], "<b/>", sep="")
 
             names(ftbl) <- head
+
+            if (title == "" & footer) title <- footnote
 
             print(
                 kable(x = ftbl,
