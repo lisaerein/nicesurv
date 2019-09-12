@@ -12,6 +12,7 @@
 #' @param weightvar Character. Name of weighting variable. Default is NA (no weights).
 #' @param cluster Character. Name of cluster variable. Default is NA (no clustering).
 #' @param strata Character. Vector of names of strata variable(s). Default is NA (no strata).
+#' @param frailty Character. Name of frailty variable. Default is NA (no random effect).
 #' @param regtype Logical. Should the covariates be run separately ("uni") or together in a multiple regression model ("multi") [REQUIRED if no fit].
 #' @param type2 Logical. If TRUE, type II p-values will be added to the table. Default is FALSE.
 #' @param type3 Logical, If TRUE, type III p-values will be added to the table. Default is FALSE.
@@ -43,6 +44,7 @@ nicecoxph <- function(fit = NA,
                       weightvar = NA,
                       cluster = NA,
                       strata = NA,
+                      frailty = NA,
 
                       regtype = "uni",
                       type2 = FALSE,
@@ -136,6 +138,9 @@ nicecoxph <- function(fit = NA,
 
         coef_tbl <- data.frame(summary(fit)$coef)
 
+        ### if frailty term exists, remove the row for frailty term
+        coef_tbl <- coef_tbl[!(grepl("frailty(*)", row.names(coef_tbl))),]
+
         ### if no estimate name is specified pick a reasonable name
         if (is.na(estname) & regtype == "uni") estname <- "HR"
         if (is.na(estname) & regtype == "multi") estname <- "aHR"
@@ -145,6 +150,7 @@ nicecoxph <- function(fit = NA,
 
         names(coef_tbl)[grepl("Est", names(coef_tbl))] <- estname
         names(coef_tbl)[grepl("Pr" , names(coef_tbl))] <- "p_value"
+        names(coef_tbl)[names(coef_tbl) == "p"] <- "p_value"
 
         ### conf function formats confidence intervals
         conf <- function(x){
@@ -157,7 +163,7 @@ nicecoxph <- function(fit = NA,
         if (nrow(coef_tbl) == 1) coef_tbl$CI <- conf(t(cimat))
         if (nrow(coef_tbl) >  1) coef_tbl$CI <- apply(cimat,1,conf)
 
-        coef_tbl$p_value <- pvfun(pvals = coef_tbl$p_value)
+        coef_tbl$p_value <- pvfun(pvals = as.numeric(as.character(coef_tbl$p_value)))
 
         ### get type II and type III p-values
         t2fit <- data.frame(Anova(fit, type = "II"))
@@ -165,6 +171,9 @@ nicecoxph <- function(fit = NA,
 
         t2fit <- subset(t2fit, !is.na(Df))
         t3fit <- subset(t3fit, !is.na(Df))
+
+        t2fit <- t2fit[!(grepl("frailty(*)", row.names(t2fit))),]
+        t3fit <- t3fit[!(grepl("frailty(*)", row.names(t3fit))),]
 
         names(t2fit)[grepl("Pr" , names(t2fit))] <- "t2_pvalue"
         names(t3fit)[grepl("Pr" , names(t3fit))] <- "t3_pvalue"
@@ -279,6 +288,9 @@ nicecoxph <- function(fit = NA,
             }
             if (!is.na(strata)){
                 formch <- paste(formch, "+ strata(", strata, ")")
+            }
+            if (!is.na(strata)){
+                formch <- paste(formch, "+ frailty(", frailty, ")")
             }
             form <- as.formula(formch)
             if (is.na(weightvar)){
@@ -404,6 +416,9 @@ nicecoxph <- function(fit = NA,
                 }
                 if (!is.na(strata)){
                     formch <- paste(formch, "+ strata(", strata, ")")
+                }
+                if (!is.na(frailty)){
+                    formch <- paste(formch, "+ frailty(", strata, ")")
                 }
                 formj <- as.formula(formch)
                 if (is.na(weightvar)){

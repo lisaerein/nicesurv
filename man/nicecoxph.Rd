@@ -6,10 +6,11 @@
 \usage{
 nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
   event = "event", ttentry = NA, weightvar = NA, cluster = NA,
-  strata = NA, regtype = "uni", type2 = FALSE, type3 = FALSE,
-  phtest = FALSE, labels = NA, estname = NA, refcat = FALSE,
-  est.dec = 2, ci.dec = 2, pval.dec = 3, color = "#EEEEEE",
-  kable = TRUE, htmlTable = FALSE, title = "", footer = TRUE)
+  strata = NA, frailty = NA, regtype = "uni", type2 = FALSE,
+  type3 = FALSE, phtest = FALSE, labels = NA, estname = NA,
+  refcat = FALSE, est.dec = 2, ci.dec = 2, pval.dec = 3,
+  color = "#EEEEEE", kable = TRUE, htmlTable = FALSE, title = "",
+  footer = TRUE)
 }
 \arguments{
 \item{fit}{coxph model object [fit or df/event/ttevent/covs are REQUIRED].}
@@ -29,6 +30,8 @@ nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
 \item{cluster}{Character. Name of cluster variable. Default is NA (no clustering).}
 
 \item{strata}{Character. Vector of names of strata variable(s). Default is NA (no strata).}
+
+\item{frailty}{Character. Name of frailty variable. Default is NA (no random effect).}
 
 \item{regtype}{Logical. Should the covariates be run separately ("uni") or together in a multiple regression model ("multi") [REQUIRED if no fit].}
 
