@@ -144,6 +144,7 @@ survtab <- function(sfit,
                       row.names = FALSE,
                       align = "lcrr")
             )
+            sdata <- sdata_k
         }
     }
 

@@ -1,0 +1,33 @@
+"0","dental <- data.frame(read_csv(file = ""Z:/consulting/Bhagavatula_Pradeep/Sulim_Igor/data/dental.csv""))
+"
+"2","Parsed with column specification:
+cols(
+  .default = col_character(),
+  Tooth__ = [32mcol_double()[39m,
+  member_id__ = [32mcol_double()[39m,
+  inRootCanal = [32mcol_double()[39m,
+  RC_CDT = [32mcol_double()[39m,
+  inDebride = [32mcol_double()[39m,
+  DB_CDT = [32mcol_double()[39m,
+  DB_RC = [32mcol_double()[39m,
+  inRestore = [32mcol_double()[39m,
+  RS_CDT = [32mcol_double()[39m,
+  RC_RS = [32mcol_double()[39m,
+  RCRS_365 = [32mcol_double()[39m,
+  inFail = [32mcol_double()[39m,
+  Fail_CDT = [32mcol_double()[39m,
+  Fail_zip = [32mcol_double()[39m,
+  Zip_Code_of_Patient = [32mcol_double()[39m,
+  Event = [32mcol_double()[39m,
+  ttEvent = [32mcol_double()[39m,
+  DB_Age = [32mcol_double()[39m,
+  RC_Age = [32mcol_double()[39m,
+  RS_Age = [32mcol_double()[39m
+)
+"
+"2","See spec(...) for full column specifications.
+"
+"2","1 parsing failure.
+ row      col expected  actual                                                           file
+4451 Fail_zip a double Unknown 'Z:/consulting/Bhagavatula_Pradeep/Sulim_Igor/data/dental.csv'
+"

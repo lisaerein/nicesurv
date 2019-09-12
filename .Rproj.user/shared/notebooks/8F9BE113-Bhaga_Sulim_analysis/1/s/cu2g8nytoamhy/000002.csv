@@ -1,0 +1,9 @@
+"0","lookup <- data.frame(read_csv(file = ""Z:/consulting/Bhagavatula_Pradeep/Sulim_Igor/data/lookup.csv""))
+"
+"2","Parsed with column specification:
+cols(
+  varname = [31mcol_character()[39m,
+  label = [31mcol_character()[39m,
+  type = [32mcol_double()[39m
+)
+"
