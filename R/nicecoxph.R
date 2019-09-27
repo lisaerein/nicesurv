@@ -17,7 +17,7 @@
 #' @param type2 Logical. If TRUE, type II p-values will be added to the table. Default is FALSE.
 #' @param type3 Logical, If TRUE, type III p-values will be added to the table. Default is FALSE.
 #' @param phtest Logical. If TRUE, a test for proportional hazards (via cox.zph) will be included in the footnote. Default is FALSE.
-#' @param labels Character. Vector of labels for covariates. Defauly is NA (use variable names).
+#' @param labels Character. Vector of labels for covariates. Default is NA (use variable names).
 #' @param estname Character. Label for estimate. Default = NA: "HR" for univariate and "aHR" for multiple regression.
 #' @param refcat Logical. If TRUE the table will create a separate line for the reference category. Default is FALSE.
 #' @param est.dec Numeric. Number of decimal places for estimates. Default is 2.
