@@ -9,6 +9,7 @@
 #' @param evlabs Character vector for event labels.
 #' @param groups Character vector for groups as listed in dataset. Default = NA (no groups).
 #' @param grlabs Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).
+#' @param grcolname Character label for group column. Default = "Group".
 #' @param state0 Character label for state 0. Default = NA (do not display estimates for state 0).
 #' @param ci.dec Number of decimal places to report for cumlative incidence estimates. Default = 2.
 #' @param perc Logical indicator to report estimates as percentages. Default = FALSE.
@@ -28,6 +29,7 @@ citab   <- function(msfit,
                     evlabs = NA,
                     groups = NA,
                     grlabs = NA,
+                    grcolname = "Group",
                     state0 = NA,
                     ci.dec = 2,
                     perc = FALSE,
@@ -88,18 +90,32 @@ citab   <- function(msfit,
 
         res <- res[,c("time", events)]
 
-        restab <- res[,2:ncol(res), drop = F]
-        names(restab) <- evlabs
+        if (htmlTable){
 
-            print(htmlTable(restab,
-                            n.cgroup = ncol(restab),
-                            cgroup = "Cumulative incidence [95% CI]",
-                            header = names(restab),
-                            rgroup = timelab,
-                            n.rgroup = nrow(res),
-                            css.cell='padding-left: 5em; padding-right: 2em;',
-                            rnames = times,
-                            col.rgroup=c('none')))
+            restab <- res[,2:ncol(res), drop = F]
+            names(restab) <- evlabs
+
+                print(htmlTable(restab,
+                                n.cgroup = ncol(restab),
+                                cgroup = "Cumulative incidence [95% CI]",
+                                header = names(restab),
+                                rgroup = timelab,
+                                n.rgroup = nrow(res),
+                                css.cell='padding-left: 5em; padding-right: 2em;',
+                                rnames = times,
+                                col.rgroup=c('none')))
+        }
+        if (kable){
+            resdat <- res
+            names(resdat) <- c(timelab, evlabs)
+            print(
+                kable(x = resdat
+                      ,row.names = FALSE
+                      ,align = paste("l", rep("c", ncol(resdat)-1), sep="")
+                      ,caption = "Cumulative incidence [95% CI]"
+                )
+            )
+        }
     }
 
     if (grouped){
@@ -125,24 +141,46 @@ citab   <- function(msfit,
         res$strata <- factor(as.character(res$strata),
                              levels = groups_eq,
                              labels = grlabs)
+        res <- res[order(res$strata),]
 
         res <- res[,c("time", "strata", events)]
 
         rows <- table(res$strata)
 
-        restab <- res[,3:ncol(res), drop = F]
-        names(restab) <- evlabs
+        if (htmlTable){
+            restab <- res[,3:ncol(res), drop = F]
+            names(restab) <- evlabs
 
-        print(htmlTable(restab,
-                        n.cgroup = ncol(restab),
-                        cgroup = "Cumulative incidence [95% CI]",
-                        header = names(restab),
-                        rowlabel = timelab,
-                        rgroup = grlabs,
-                        n.rgroup = rows,
-                        rnames = res$time,
-                        col.rgroup=c("#EEEEEE", 'none'),
-                        css.cell='padding-left: 5em; padding-right: 2em;'))
+            print(htmlTable(restab,
+                            n.cgroup = ncol(restab),
+                            cgroup = "Cumulative incidence [95% CI]",
+                            header = names(restab),
+                            rowlabel = timelab,
+                            rgroup = grlabs,
+                            n.rgroup = rows,
+                            rnames = res$time,
+                            col.rgroup=c("#EEEEEE", 'none'),
+                            css.cell='padding-left: 5em; padding-right: 2em;'
+                            )
+                  )
+        }
+
+        if (kable){
+            timecol <- res$time
+            stratcol <- as.character(res$strata)
+            restab <- res[,3:ncol(res)]
+            stratcol[timecol!= min(times)] <- NA
+            resdat <- data.frame(stratcol, timecol, restab)
+            names(resdat) <- c(grcolname, timelab, evlabs)
+            print(
+                kable(x = resdat
+                      ,row.names = FALSE
+                      ,align = paste("lr", rep("c", ncol(resdat)-2), sep="")
+                      ,caption = "Cumulative incidence [95% CI]"
+                      )
+            )
+        }
+
     }
     return(res)
 }
