@@ -226,7 +226,7 @@ ggcuminc <- function(msfit,
 
     }
 
-    cols <- c("#ECF0F1","#D2B4DE","#76D7C4","#F8C471","#F7DC6F","#EC7063","#A6DBFF")
+    cols <- c("#ECF0F1","#D2B4DE","#76D7C4","#F8C471","#7fbbe1","#F7DC6F","#EC7063","#A6DBFF")
     ltys <- rep(1, length(groups))
     if (!is.na(cuminc.col[1])) cols <- cuminc.col
     if (!is.na(cuminc.lty[1])) ltys <- cuminc.lty
