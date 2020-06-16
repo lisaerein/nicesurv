@@ -175,7 +175,7 @@ citab   <- function(msfit,
             print(
                 kable(x = resdat
                       ,row.names = FALSE
-                      ,align = paste("lr", rep("c", ncol(resdat)-2), sep="")
+                      ,align = unlist(c("l", "r", rep("c", ncol(resdat)-2)))
                       ,caption = "Cumulative incidence [95% CI]"
                       )
             )
