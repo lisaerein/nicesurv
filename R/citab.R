@@ -69,7 +69,8 @@ citab   <- function(msfit,
         ci[,i] <- gsub("NA|NaN", "---", ci[,i])
     }
     ci <- data.frame(ci)
-    names(ci) <- c(est$states[1:(length(est$states)-1)], ifelse(!is.na(state0), state0, "state0"))
+    # names(ci) <- c(est$states[1:(length(est$states)-1)], ifelse(!is.na(state0), state0, "state0"))
+    names(ci) <- est$states
 
     ### check if msfit object has stratafication or not
     ### if stratified check group names and apply group labels if any
