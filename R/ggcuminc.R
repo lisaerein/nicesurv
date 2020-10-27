@@ -118,7 +118,8 @@ ggcuminc <- function(msfit,
     est <- summary(msfit, times = times)
 
     probs <- data.frame(est$pstate)
-    names(probs) <- c(est$states[1:(length(est$states)-1)], state0)
+    names(probs) <- est$states
+    names(probs)[which(names(probs) %in% "(s0)")] <- state0
 
     ### is model stratified or not?
     by <- ifelse(is.null(msfit$strata) == TRUE, NA, names(msfit$strata)[1])
