@@ -4,13 +4,33 @@
 \alias{nicecoxph}
 \title{Lisa's Cox Proportional Hazards Regression Table Reporting Function}
 \usage{
-nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
-  event = "event", ttentry = NA, weightvar = NA, cluster = NA,
-  strata = NA, frailty = NA, regtype = "uni", type2 = FALSE,
-  type3 = FALSE, phtest = FALSE, labels = NA, estname = NA,
-  refcat = FALSE, est.dec = 2, ci.dec = 2, pval.dec = 3,
-  color = "#EEEEEE", kable = TRUE, htmlTable = FALSE, title = "",
-  footer = TRUE)
+nicecoxph(
+  fit = NA,
+  df = NA,
+  covs = NA,
+  ttevent = "ttevent",
+  event = "event",
+  ttentry = NA,
+  weightvar = NA,
+  cluster = NA,
+  strata = NA,
+  frailty = NA,
+  regtype = "uni",
+  type2 = FALSE,
+  type3 = FALSE,
+  phtest = FALSE,
+  labels = NA,
+  estname = NA,
+  refcat = FALSE,
+  est.dec = 2,
+  ci.dec = 2,
+  pval.dec = 3,
+  color = "#EEEEEE",
+  kable = TRUE,
+  htmlTable = FALSE,
+  title = "",
+  footer = TRUE
+)
 }
 \arguments{
 \item{fit}{coxph model object [fit or df/event/ttevent/covs are REQUIRED].}
@@ -41,7 +61,7 @@ nicecoxph(fit = NA, df = NA, covs = NA, ttevent = "ttevent",
 
 \item{phtest}{Logical. If TRUE, a test for proportional hazards (via cox.zph) will be included in the footnote. Default is FALSE.}
 
-\item{labels}{Character. Vector of labels for covariates. Defauly is NA (use variable names).}
+\item{labels}{Character. Vector of labels for covariates. Default is NA (use variable names).}
 
 \item{estname}{Character. Label for estimate. Default = NA: "HR" for univariate and "aHR" for multiple regression.}
 

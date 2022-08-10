@@ -4,9 +4,19 @@
 \alias{survtab}
 \title{Lisa's Survival Summary Table}
 \usage{
-survtab(sfit, times, timelab = "Time", groups = NA, grlabs = NA,
-  surv.dec = 2, perc = FALSE, color = "#EEEEEE", printorig = TRUE,
-  kable = TRUE, htmlTable = FALSE)
+survtab(
+  sfit,
+  times,
+  timelab = "Time",
+  groups = NA,
+  grlabs = NA,
+  surv.dec = 2,
+  perc = FALSE,
+  color = "#EEEEEE",
+  printorig = TRUE,
+  kable = TRUE,
+  htmlTable = FALSE
+)
 }
 \arguments{
 \item{sfit}{Survfit object (REQUIRED).}

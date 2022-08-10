@@ -34,7 +34,7 @@
 #' @param grid Logical vector of length 2 to plot major gridlines in x and y directions. Default = c(TRUE, TRUE).
 #' If one value is provided it will apply to both directions.
 #' @param themebw Indicator for use of ggplot2 theme_bw. Default = TRUE.
-#' @param cuminc Logical indicator whether to apply 1-x transformation to plot cumulative incidence. Default = FALSE.
+#' @param citrans Logical indicator whether to apply 1-x transformation to plot cumulative incidence. Default = FALSE.
 #' @keywords summary KM curve plot ggplot2 survival consulting Lisa
 #' @import survival
 #' @import ggplot2

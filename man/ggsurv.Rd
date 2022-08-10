@@ -4,15 +4,42 @@
 \alias{ggsurv}
 \title{Lisa's Survival Plot}
 \usage{
-ggsurv(sfit, surv.lty = 1, surv.size = 1, surv.col = NA, ci = TRUE,
-  ci.lty = 2, ci.size = 0.5, ci.ribbon = TRUE, ci.alpha = 0.2,
-  cens = TRUE, cens.col = "red", cens.size = 2, cens.shape = 3,
-  groups = NA, grlabs = NA, grname = NA, perc = FALSE,
-  xlab = "\\nTime", ylab = "Survival\\n", xlim = NA, ylim = c(0,
-  1), xby = NA, xbrlabs = NA, yby = 0.1, risktab = FALSE,
-  risktab.times = NA, risktab.label = "Number at risk",
-  risktab.margins = c(0, 0, 0.2, 0.15), risktab.events = TRUE,
-  main = "", plab = NA, grid = c(TRUE, TRUE), themebw = TRUE)
+ggsurv(
+  sfit,
+  surv.lty = 1,
+  surv.size = 1,
+  surv.col = NA,
+  ci = TRUE,
+  ci.lty = 2,
+  ci.size = 0.5,
+  ci.ribbon = TRUE,
+  ci.alpha = 0.2,
+  cens = TRUE,
+  cens.col = "red",
+  cens.size = 2,
+  cens.shape = 3,
+  groups = NA,
+  grlabs = NA,
+  grname = NA,
+  perc = FALSE,
+  xlab = "\\nTime",
+  ylab = "Survival\\n",
+  xlim = NA,
+  ylim = c(0, 1),
+  xby = NA,
+  xbrlabs = NA,
+  yby = 0.1,
+  risktab = FALSE,
+  risktab.times = NA,
+  risktab.label = "Number at risk",
+  risktab.margins = c(0, 0, 0.2, 0.15),
+  risktab.events = TRUE,
+  main = "",
+  plab = NA,
+  grid = c(TRUE, TRUE),
+  themebw = TRUE,
+  citrans = FALSE
+)
 }
 \arguments{
 \item{sfit}{survfit object (REQUIRED).}
@@ -65,7 +92,7 @@ ggsurv(sfit, surv.lty = 1, surv.size = 1, surv.col = NA, ci = TRUE,
 
 \item{risktab.label}{Character label for risk table. Default = "Number at risk".}
 
-\item{risktab.margins}{Numeric vector for plot margins in format c(top, right, bottom, left) where each value is a proportion of plot dimensions. 
+\item{risktab.margins}{Numeric vector for plot margins in format c(top, right, bottom, left) where each value is a proportion of plot dimensions.
 Adjustments may be needed to accomodate long group names or a large number of groups. Default = c(0.00, 0.00, 0.20, 0.15).}
 
 \item{risktab.events}{Logical indicator to include number of events (for non-stratified plots only). Default = TRUE.}
@@ -74,10 +101,12 @@ Adjustments may be needed to accomodate long group names or a large number of gr
 
 \item{plab}{Character for annotation in top right corner (for p-value or other notes). Default = NA (no annotation).}
 
-\item{grid}{Logical vector of length 2 to plot major gridlines in x and y directions. Default = c(TRUE, TRUE). 
+\item{grid}{Logical vector of length 2 to plot major gridlines in x and y directions. Default = c(TRUE, TRUE).
 If one value is provided it will apply to both directions.}
 
 \item{themebw}{Indicator for use of ggplot2 theme_bw. Default = TRUE.}
+
+\item{citrans}{Logical indicator whether to apply 1-x transformation to plot cumulative incidence. Default = FALSE.}
 }
 \description{
 This function creates a survival plot from a survfit object using ggplot2 graphics.

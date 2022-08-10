@@ -4,9 +4,17 @@
 \alias{medtab}
 \title{Lisa's Median Survival Table}
 \usage{
-medtab(sfit, groups = NA, grlabs = NA, grcolname = "Group",
-  med.dec = 2, medlab = "Median survival time", printorig = TRUE,
-  kable = TRUE, htmlTable = FALSE)
+medtab(
+  sfit,
+  groups = NA,
+  grlabs = NA,
+  grcolname = "Group",
+  med.dec = 2,
+  medlab = "Median survival time",
+  printorig = TRUE,
+  kable = TRUE,
+  htmlTable = FALSE
+)
 }
 \arguments{
 \item{sfit}{Survfit object (REQUIRED).}

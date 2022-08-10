@@ -4,10 +4,23 @@
 \alias{citab}
 \title{Lisa's Cumulative Incidence Survival Table}
 \usage{
-citab(msfit, times, timelab = "Time", events = NA, evlabs = NA,
-  groups = NA, grlabs = NA, state0 = NA, ci.dec = 2,
-  perc = FALSE, color = "#EEEEEE", kable = TRUE, htmlTable = FALSE,
-  printorig = TRUE)
+citab(
+  msfit,
+  times,
+  timelab = "Time",
+  events = NA,
+  evlabs = NA,
+  groups = NA,
+  grlabs = NA,
+  grcolname = "Group",
+  state0 = NA,
+  ci.dec = 2,
+  perc = FALSE,
+  color = "#EEEEEE",
+  kable = TRUE,
+  htmlTable = FALSE,
+  printorig = TRUE
+)
 }
 \arguments{
 \item{msfit}{survfit object of type "mstate" (REQUIRED).}
@@ -23,6 +36,8 @@ citab(msfit, times, timelab = "Time", events = NA, evlabs = NA,
 \item{groups}{Character vector for groups as listed in dataset. Default = NA (no groups).}
 
 \item{grlabs}{Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).}
+
+\item{grcolname}{Character label for group column. Default = "Group".}
 
 \item{state0}{Character label for state 0. Default = NA (do not display estimates for state 0).}
 
