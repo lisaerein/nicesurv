@@ -6,8 +6,8 @@
 #' @param groups Character vector for groups as listed in dataset. Default = NA (no groups).
 #' @param grlabs Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).
 #' @param grname Character label for group legend. Default = " ".
-#' @param events Character vector for event names (including state 0).
-#' @param evlabs Character vector for event labels.
+#' @param events Character vector for event names (do not include 0 level).
+#' @param evlabs Character vector for event labels (do not include 0 level).
 #' @param evtitle Character label for event legend. Default = "Events".
 #' @param perc Logical indicator to show y axis as percentages. Default = FALSE.
 #' @param xlab Character label for x axis. Default = "Time".
@@ -18,8 +18,8 @@
 #' @param yby Numeric for y axis major tick marks. Default = 0.1.
 #' @param xbrlabs Vector for alternative x axis labels. Default = NA.
 #' @param stack Character to indicate stacking events "events" or groups "groups". Default = "events".
-#' @param state0 Character label for state 0. Default = NA (do not display estimates for state 0).
-#' @param cuminc.col Character vector for color of shaded cumulative incidence bands. Default = default colors.
+#' @param state0 Character label for state 0. Default = "state_0".
+#' @param cuminc.col Character vector for color of shaded cumulative incidence bands (do not include 0 level). Default = default colors.
 #' @param cuminc.lty Numeric vector for line type of cumulative incidence lines. Default = 1.
 #' @param cuminc.size Number for size of cumulative incidence lines. Default = 1.
 #' @param step Logical indicator to use step function or not. Default = TRUE.
@@ -49,7 +49,7 @@ ggcuminc <- function(msfit,
                     yby = 0.1,
                     xbrlabs = NA,
                     stack = "events",
-                    state0 = "Healthy",
+                    state0 = "state_0",
                     cuminc.col = NA,
                     cuminc.lty = NA,
                     cuminc.size = 1.5,
@@ -113,13 +113,13 @@ ggcuminc <- function(msfit,
     }
     if (length(xbrlabs) == 1 & is.na(xbrlabs[1])) xbrlabs <- xbrs
 
-    times <- c(xmin, unique(est$time),xmax)
+    times <- c(0, unique(est$time), max(msfit$time))
 
     est <- summary(msfit, times = times)
 
     probs <- data.frame(est$pstate)
     names(probs) <- est$states
-    names(probs)[which(names(probs) %in% "(s0)")] <- state0
+    names(probs)[which(names(probs) %in% "(s0)")] <- "state_0"
 
     ### is model stratified or not?
     by <- ifelse(is.null(msfit$strata) == TRUE, NA, names(msfit$strata)[1])
@@ -128,27 +128,31 @@ ggcuminc <- function(msfit,
 
         by <- unlist(strsplit(by, '='))[1]
 
-        res <- data.frame("group" = as.character(est$strata),
-                          "time" = c(est$time),
-                          rbind(probs),
-                          stringsAsFactors = FALSE)
+        res <- data.frame("group" = as.character(est$strata)
+                          ,"time" = c(est$time)
+                          ,rbind(probs)
+                          ,stringsAsFactors = FALSE
+                          )
 
-        res_l <- melt(res,
-                      id.vars = c("group", "time"),
-                      value.name = "prob",
-                      variable.name = "event")
+        res_l <- melt(res
+                      ,id.vars = c("group", "time")
+                      ,value.name = "prob"
+                      ,variable.name = "event"
+                      )
 
         if (step){
-            res_l2 <- ddply(res_l,
-                            c("event","group"),
-                            mutate,
-                            time_l = (lead(time,1)- 1e-9))
+            res_l2 <- ddply(res_l
+                            ,c("event","group")
+                            ,mutate
+                            ,time_l = (lead(time,1)- 1e-9)
+                            )
         }
         if (!step){
-            res_l2 <- ddply(res_l,
-                            c("event","group"),
-                            mutate,
-                            time_l = time + 1e-9)
+            res_l2 <- ddply(res_l
+                            ,c("event","group")
+                            ,mutate
+                            ,time_l = time + 1e-9
+                            )
         }
 
         old <- res_l2[,c("group","event", "time", "prob")]
@@ -160,30 +164,34 @@ ggcuminc <- function(msfit,
         res_l <- res_l[!duplicated(res_l),]
     }
     if (is.na(by)){
-        res <- data.frame("time" = c(est$time),
-                          rbind(probs))
+        res <- data.frame("time" = c(est$time)
+                          ,rbind(probs)
+                          )
 
-        res_l <- melt(res,
-                      id.vars = c("time"),
-                      value.name = "prob",
-                      variable.name = "event")
+        res_l <- melt(res
+                      ,id.vars = c("time")
+                      ,value.name = "prob"
+                      ,variable.name = "event"
+                      )
         if (step){
-            res_l2 <- ddply(res_l,
-                            "event",
-                            mutate,
-                            time_l = (lead(time,1)- 1e-9))
+            res_l2 <- ddply(res_l
+                            ,"event"
+                            ,mutate
+                            ,time_l = (lead(time, 1) - 1e-9)
+                            )
         }
         if (!step){
-            res_l2 <- ddply(res_l,
-                            "event",
-                            mutate,
-                            time_l = time + 1e-9)
+            res_l2 <- ddply(res_l
+                            ,"event"
+                            ,mutate
+                            ,time_l = time + 1e-9
+                            )
         }
 
         old <- res_l2[,c("event", "time", "prob")]
         new <- res_l2[,c("event", "time_l", "prob")]
         names(new) <- names(old)
-        res_l <- rbind(old,new)
+        res_l <- rbind(old, new)
         res_l <- res_l[!duplicated(res_l),]
     }
 
@@ -191,15 +199,22 @@ ggcuminc <- function(msfit,
     evnts <- levels(res_l$event)
 
     if (!is.na(events[1])) {
-        if (sum(events %in% evnts) != length(evnts)) events <- evnts <- NA
+        if (sum(events %in% evnts) != length(events)) events <- NA
     }
 
-    if (is.na(events[1])) events <- evnts
-    if (is.na(evlabs[1])) evlabs <- events
+    state0_lab <- "state_0"
+    if (!is.na(state0)) state0_lab <- state0
 
-    res_l$event <- factor(res_l$event,
-                          levels = events,
-                          labels = evlabs)
+    if (is.na(events[1])) events <- evnts[-1]
+    if (is.na(evlabs[1])) evlabs <- evnts[-1]
+
+    events <- c("state_0", events)
+    evlabs <- c(state0_lab, evlabs)
+
+    res_l$event <- factor(res_l$event
+                          ,levels = events
+                          ,labels = evlabs
+                          )
 
     ## check if input groups/labels are valid and apply if so
     if (!is.na(by)){
@@ -227,9 +242,10 @@ ggcuminc <- function(msfit,
 
     }
 
-    cols <- c("#ECF0F1","#D2B4DE","#76D7C4","#F8C471","#7fbbe1","#F7DC6F","#EC7063","#A6DBFF")
+    # cols <- c("#ECF0F1","#D2B4DE","#76D7C4","#F8C471","#7fbbe1","#F7DC6F","#EC7063","#A6DBFF")
+    cols <- c("#ECF0F1","tomato","dodgerblue","gold","forestgreen","darkorchid","burleywood","darkorange","turquoise3")
     ltys <- rep(1, length(groups))
-    if (!is.na(cuminc.col[1])) cols <- cuminc.col
+    if (!is.na(cuminc.col[1])) cols <- c("#ECF0F1", cuminc.col)
     if (!is.na(cuminc.lty[1])) ltys <- cuminc.lty
 
     if (stack == "events"){

@@ -166,8 +166,8 @@ nicecoxph <- function(fit = NA,
         coef_tbl$p_value <- pvfun(pvals = as.numeric(as.character(coef_tbl$p_value)))
 
         ### get type II and type III p-values
-        t2fit <- data.frame(Anova(fit, type = "II"))
-        t3fit <- data.frame(Anova(fit, type = "III"))
+        t2fit <- data.frame(car::Anova(fit, type = "II"))
+        t3fit <- data.frame(car::Anova(fit, type = "III"))
 
         t2fit <- subset(t2fit, !is.na(Df))
         t3fit <- subset(t3fit, !is.na(Df))

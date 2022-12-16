@@ -1,9 +1,9 @@
 {
-    "path" : "~/GitHub/nicesurv",
-    "sortOrder" : [
+    "path": "~/GitHub/nicesurv",
+    "sortOrder": [
         {
-            "ascending" : true,
-            "columnIndex" : 2
+            "ascending": true,
+            "columnIndex": 2
         }
     ]
 }
