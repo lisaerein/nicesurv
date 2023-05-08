@@ -13,7 +13,6 @@ citab(
   groups = NA,
   grlabs = NA,
   grcolname = "Group",
-  state0 = NA,
   ci.dec = 2,
   perc = FALSE,
   color = "#EEEEEE",
@@ -29,17 +28,15 @@ citab(
 
 \item{timelab}{Character label for time. Default = "Time".}
 
-\item{events}{Character vector for event names (including state 0).}
+\item{events}{Character vector for event names. Note base state should always be referred to as "(s0)"). Default = NA (take names from object).}
 
-\item{evlabs}{Character vector for event labels.}
+\item{evlabs}{Character vector for event labels. Default = NA (take names from object or events arg).}
 
 \item{groups}{Character vector for groups as listed in dataset. Default = NA (no groups).}
 
 \item{grlabs}{Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).}
 
 \item{grcolname}{Character label for group column. Default = "Group".}
-
-\item{state0}{Character label for state 0. Default = NA (do not display estimates for state 0).}
 
 \item{ci.dec}{Number of decimal places to report for cumlative incidence estimates. Default = 2.}
 

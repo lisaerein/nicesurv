@@ -21,7 +21,7 @@ ggcuminc(
   yby = 0.1,
   xbrlabs = NA,
   stack = "events",
-  state0 = "Healthy",
+  state0 = "state_0",
   cuminc.col = NA,
   cuminc.lty = NA,
   cuminc.size = 1.5,
@@ -42,9 +42,9 @@ ggcuminc(
 
 \item{grname}{Character label for group legend. Default = " ".}
 
-\item{events}{Character vector for event names (including state 0).}
+\item{events}{Character vector for event names (do not include 0 level).}
 
-\item{evlabs}{Character vector for event labels.}
+\item{evlabs}{Character vector for event labels (do not include 0 level).}
 
 \item{evtitle}{Character label for event legend. Default = "Events".}
 
@@ -66,9 +66,9 @@ ggcuminc(
 
 \item{stack}{Character to indicate stacking events "events" or groups "groups". Default = "events".}
 
-\item{state0}{Character label for state 0. Default = NA (do not display estimates for state 0).}
+\item{state0}{Character label for state 0. Default = "state_0".}
 
-\item{cuminc.col}{Character vector for color of shaded cumulative incidence bands. Default = default colors.}
+\item{cuminc.col}{Character vector for color of shaded cumulative incidence bands (do not include 0 level). Default = default colors.}
 
 \item{cuminc.lty}{Numeric vector for line type of cumulative incidence lines. Default = 1.}
 

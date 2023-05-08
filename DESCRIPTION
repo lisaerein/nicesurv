@@ -16,5 +16,5 @@ License: CC0
 LazyData: true
 Suggests: knitr
 VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.2
 Encoding: UTF-8

@@ -5,12 +5,11 @@
 #' @param msfit survfit object of type "mstate" (REQUIRED).
 #' @param times Numeric vector of times for cumulative incidence estimates (REQUIRED).
 #' @param timelab Character label for time. Default = "Time".
-#' @param events Character vector for event names (including state 0).
-#' @param evlabs Character vector for event labels.
+#' @param events Character vector for event names. Note base state should always be referred to as "(s0)"). Default = NA (take names from object).
+#' @param evlabs Character vector for event labels. Default = NA (take names from object or events arg).
 #' @param groups Character vector for groups as listed in dataset. Default = NA (no groups).
 #' @param grlabs Character vector for group names, must be in same order as groups. Default = NA (no groups or use group levels from dataset).
 #' @param grcolname Character label for group column. Default = "Group".
-#' @param state0 Character label for state 0. Default = NA (do not display estimates for state 0).
 #' @param ci.dec Number of decimal places to report for cumlative incidence estimates. Default = 2.
 #' @param perc Logical indicator to report estimates as percentages. Default = FALSE.
 #' @param color Character Hex color to use for htmlTable striping. Default = "#EEEEEE" (light grey).
@@ -22,21 +21,21 @@
 #' @importFrom knitr kable
 #' @importFrom htmlTable htmlTable
 #' @export
-citab   <- function(msfit,
-                    times,
-                    timelab = "Time",
-                    events = NA,
-                    evlabs = NA,
-                    groups = NA,
-                    grlabs = NA,
-                    grcolname = "Group",
-                    state0 = NA,
-                    ci.dec = 2,
-                    perc = FALSE,
-                    color = "#EEEEEE",
-                    kable = TRUE,
-                    htmlTable = FALSE,
-                    printorig = TRUE){
+citab   <- function(msfit
+                    ,times
+                    ,timelab = "Time"
+                    ,events = NA
+                    ,evlabs = NA
+                    ,groups = NA
+                    ,grlabs = NA
+                    ,grcolname = "Group"
+                    ,ci.dec = 2
+                    ,perc = FALSE
+                    ,color = "#EEEEEE"
+                    ,kable = TRUE
+                    ,htmlTable = FALSE
+                    ,printorig = TRUE
+                    ){
 
     if (printorig) print(summary(msfit, times = times))
 
@@ -72,22 +71,33 @@ citab   <- function(msfit,
     # names(ci) <- c(est$states[1:(length(est$states)-1)], ifelse(!is.na(state0), state0, "state0"))
     names(ci) <- est$states
 
-    ### check if msfit object has stratafication or not
+    ### check if msfit object has stratification or not
     ### if stratified check group names and apply group labels if any
     grouped <- FALSE
     if (!is.null(msfit$strata)) grouped <- TRUE
 
     ### relabel/reorder events?
     evnts <- names(ci)
+
+    # if events from argument do not match column names, do not use them...
     if (!is.na(events[1])) {
-        if (sum(events %in% evnts) == 0) events <- evnts <- NA
+        if (sum(events %in% evnts) != length(events)) events <- NA
     }
-    if (is.na(events[1])) events <- evnts
-    if (is.na(evlabs[1])) evlabs <- events
+    # if events are not listed, take them from column names
+    # exclude the first column for base state: X.s0.
+    if (is.na(events[1])) {
+        events <- evnts
+
+        if (is.na(evlabs[1])) evlabs <- events
+
+        # remove base event, s(0), probabilities
+        events <- events[-1]
+        evlabs <- evlabs[-1]
+    }
 
     if (!grouped){
         res <- data.frame("time" = c(est$time), rbind(ci))
-        # names(res)[1] <- timelab
+        names(res) <- gsub("X.s0.", "(s0)", names(res))
 
         res <- res[,c("time", events)]
 
@@ -112,7 +122,7 @@ citab   <- function(msfit,
             print(
                 kable(x = resdat
                       ,row.names = FALSE
-                      ,align = paste("l", rep("c", ncol(resdat)-1), sep="")
+                      ,align = c("l", rep("c", ncol(resdat)-1))
                       ,caption = "Cumulative incidence [95% CI]"
                 )
             )
@@ -144,6 +154,7 @@ citab   <- function(msfit,
                              labels = grlabs)
         res <- res[order(res$strata),]
 
+        names(res) <- gsub("X.s0.", "(s0)", names(res))
         res <- res[,c("time", "strata", events)]
 
         rows <- table(res$strata)
@@ -176,7 +187,7 @@ citab   <- function(msfit,
             print(
                 kable(x = resdat
                       ,row.names = FALSE
-                      ,align = unlist(c("l", "r", rep("c", ncol(resdat)-2)))
+                      ,align = c("l", "r", rep("c", ncol(resdat)-2))
                       ,caption = "Cumulative incidence [95% CI]"
                       )
             )
