@@ -113,7 +113,17 @@ ggcuminc <- function(msfit,
     }
     if (length(xbrlabs) == 1 & is.na(xbrlabs[1])) xbrlabs <- xbrs
 
-    times <- c(0, unique(est$time), max(msfit$time))
+    # get max followup times overall and by group (if applicable):
+    maxt <- max(msfit$time)
+    if (!is.na(by)){
+        for (st in 1:length(msfit$strata)){
+            if (st %in% 1) sinc <- msfit$strata[st]
+            if (st > 1) sinc <- sinc + msfit$strata[st]
+            maxt <- c(maxt, msfit$time[sinc])
+        }
+    }
+
+    times <- c(0, unique(est$time), maxt)
 
     est <- summary(msfit, times = times)
 

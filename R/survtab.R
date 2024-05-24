@@ -11,24 +11,28 @@
 #' @param perc Logical indicator to report survival estimates as percentages. Default = FALSE.
 #' @param color Character Hex color to use for htmlTable striping. Default = "#EEEEEE" (light grey).
 #' @param printorig Logical indicator to print original summary of survfit object for checking purposes. Default = TRUE.
-#' @param kable Logical. Indicator to use kable to display table. Default = TRUE.
+#' @param kable Logical. Indicator to use kable to display table. Default = FALSE
 #' @param htmlTable Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.
+#' @param flextable Logical. Indivator to use flextable to print table. Default = TRUE.
 #' @keywords summary survival table consulting Lisa
 #' @import survival
+#' @import flextable
 #' @importFrom knitr kable
 #' @importFrom htmlTable htmlTable
 #' @export
-survtab <- function(sfit,
-                    times,
-                    timelab = "Time",
-                    groups = NA,
-                    grlabs = NA,
-                    surv.dec = 2,
-                    perc = FALSE,
-                    color = "#EEEEEE",
-                    printorig = TRUE,
-                    kable = TRUE,
-                    htmlTable = FALSE){
+survtab <- function(sfit
+                    ,times
+                    ,timelab = "Time"
+                    ,groups = NA
+                    ,grlabs = NA
+                    ,surv.dec = 2
+                    ,perc = FALSE
+                    ,color = "#EEEEEE"
+                    ,printorig = TRUE
+                    ,kable = TRUE
+                    ,htmlTable = FALSE
+                    ,flextable = TRUE
+                    ){
 
     if (printorig) print(summary(sfit, times=times))
     stable <- summary(sfit, times=times)
@@ -71,6 +75,15 @@ survtab <- function(sfit,
     grouped <- FALSE
     if (!is.null(sfit$strata)) grouped <- TRUE
 
+    if (flextable) {
+        htmlTable <- FALSE
+        kable <- FALSE
+    }
+    if (kable) {
+        flextable <- FALSE
+        htmlTable <- FALSE
+    }
+
     if (!grouped){
         if (htmlTable){
             print(htmlTable(sdata[,2:ncol(sdata)],
@@ -78,6 +91,18 @@ survtab <- function(sfit,
                         rnames = Time,
                         rowlabel = timelab,
                         col.rgroup=c('none')))
+        }
+        if (flextable){
+
+            names(sdata) <- gsub("Time", timelab, names(sdata))
+
+            cat(knit_print(
+                flextable(sdata) %>%
+                flextable::autofit() %>%
+                flextable::align(j = 1:4, align= "center", part = "all") %>%
+                flextable::padding(padding = 0.5)
+                )
+            )
         }
         if (kable){
             names(sdata)[1] <- timelab
@@ -112,11 +137,10 @@ survtab <- function(sfit,
 
         rows <- table(sdata$strata)
 
-        sdata <- sdata[,!(names(sdata) %in% c("strata", "order"))]
-
-        if (htmlTable & kable) htmlTable <- FALSE
+        sdata <- sdata[,!(names(sdata) %in% c("order"))]
 
         if (htmlTable){
+            sdata <- sdata[,!(names(sdata) %in% c("strata", "order"))]
             print(htmlTable(sdata[,2:ncol(sdata)],
                             rowlabel = timelab,
                             rgroup = grlabs,
@@ -125,8 +149,22 @@ survtab <- function(sfit,
                             col.rgroup=c("#EEEEEE", 'none'),
                             css.cell='padding-left: 5em; padding-right: 2em;'))
         }
-        if (kable){
+        if (flextable){
 
+            sdatag <- flextable::as_grouped_data(sdata, groups = "strata")
+
+            names(sdatag) <- gsub("strata", "Group", names(sdatag))
+            names(sdatag) <- gsub("Time", timelab, names(sdatag))
+
+            cat(knit_print(flextable(sdatag) %>%
+                      flextable::autofit() %>%
+                      flextable::align(j = 2:5, align= "center", part = "all") %>%
+                      flextable::padding(padding = 0.5)
+                      )
+                )
+        }
+        if (kable){
+            sdata <- sdata[,!(names(sdata) %in% c("strata", "order"))]
             sdata_k <- NULL
             for (r in 1:length(rows)){
                 blank <- sdata[1,]

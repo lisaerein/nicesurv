@@ -18,6 +18,7 @@ citab(
   color = "#EEEEEE",
   kable = TRUE,
   htmlTable = FALSE,
+  flextable = TRUE,
   printorig = TRUE
 )
 }
@@ -47,6 +48,8 @@ citab(
 \item{kable}{Logical. Indicator to use kable to display table. Default = TRUE.}
 
 \item{htmlTable}{Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.}
+
+\item{flextable}{Logical. Indicator to use flextable to display results.}
 
 \item{printorig}{Logical indicator to print original summary of ms-survfit object for checking purposes. Default = TRUE.}
 }

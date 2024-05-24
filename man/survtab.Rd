@@ -15,7 +15,8 @@ survtab(
   color = "#EEEEEE",
   printorig = TRUE,
   kable = TRUE,
-  htmlTable = FALSE
+  htmlTable = FALSE,
+  flextable = TRUE
 )
 }
 \arguments{
@@ -37,9 +38,11 @@ survtab(
 
 \item{printorig}{Logical indicator to print original summary of survfit object for checking purposes. Default = TRUE.}
 
-\item{kable}{Logical. Indicator to use kable to display table. Default = TRUE.}
+\item{kable}{Logical. Indicator to use kable to display table. Default = FALSE}
 
 \item{htmlTable}{Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.}
+
+\item{flextable}{Logical. Indivator to use flextable to print table. Default = TRUE.}
 }
 \description{
 This function creates a summary table from a survfit object including survival estimates with CIs, number of events, and number at risk.

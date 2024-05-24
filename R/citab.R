@@ -16,6 +16,7 @@
 #' @param kable Logical. Indicator to use kable to display table. Default = TRUE.
 #' @param htmlTable Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.
 #' @param printorig Logical indicator to print original summary of ms-survfit object for checking purposes. Default = TRUE.
+#' @param flextable Logical. Indicator to use flextable to display results.
 #' @keywords summary survival table consulting Lisa cumulative incidence mstate
 #' @import survival
 #' @importFrom knitr kable
@@ -34,6 +35,7 @@ citab   <- function(msfit
                     ,color = "#EEEEEE"
                     ,kable = TRUE
                     ,htmlTable = FALSE
+                    ,flextable = TRUE
                     ,printorig = TRUE
                     ){
 
@@ -95,6 +97,15 @@ citab   <- function(msfit
         evlabs <- evlabs[-1]
     }
 
+    if (flextable) {
+        htmlTable <- FALSE
+        kable <- FALSE
+    }
+    if (kable) {
+        flextable <- FALSE
+        htmlTable <- FALSE
+    }
+
     if (!grouped){
         res <- data.frame("time" = c(est$time), rbind(ci))
         names(res) <- gsub("X.s0.", "(s0)", names(res))
@@ -115,6 +126,18 @@ citab   <- function(msfit
                                 css.cell='padding-left: 5em; padding-right: 2em;',
                                 rnames = times,
                                 col.rgroup=c('none')))
+        }
+        if (flextable){
+            resdat <- res
+            names(resdat) <- c(timelab, evlabs)
+
+            cat(knit_print(
+                flextable(resdat) %>%
+                    flextable::autofit() %>%
+                    flextable::align(j = 2:ncol(resdat), align= "center", part = "all") %>%
+                    flextable::padding(padding = 0.5)
+                )
+            )
         }
         if (kable){
             resdat <- res
@@ -176,7 +199,22 @@ citab   <- function(msfit
                             )
                   )
         }
+        if (flextable){
+            timecol <- res$time
+            stratcol <- as.character(res$strata)
+            restab <- res[,3:ncol(res)]
+            stratcol[timecol!= min(times)] <- NA
+            resdat <- data.frame(stratcol, timecol, restab)
+            names(resdat) <- c(grcolname, timelab, evlabs)
 
+            cat(knit_print(
+                flextable(resdat) %>%
+                    flextable::autofit() %>%
+                    flextable::align(j = 3:ncol(resdat), align= "center", part = "all") %>%
+                    flextable::padding(padding = 0.5)
+            )
+            )
+        }
         if (kable){
             timecol <- res$time
             stratcol <- as.character(res$strata)
