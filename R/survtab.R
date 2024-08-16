@@ -13,7 +13,8 @@
 #' @param printorig Logical indicator to print original summary of survfit object for checking purposes. Default = TRUE.
 #' @param kable Logical. Indicator to use kable to display table. Default = FALSE
 #' @param htmlTable Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.
-#' @param flextable Logical. Indivator to use flextable to print table. Default = TRUE.
+#' @param flextable Logical. Indicator to use flextable to print table. Default = TRUE.
+#' @param citrans Logical indicator whether to apply 1-x transformation for estimates. Default = FALSE.
 #' @keywords summary survival table consulting Lisa
 #' @import survival
 #' @import flextable
@@ -32,12 +33,23 @@ survtab <- function(sfit
                     ,kable = TRUE
                     ,htmlTable = FALSE
                     ,flextable = TRUE
+                    ,citrans = FALSE
                     ){
 
     if (printorig) print(summary(sfit, times=times))
     stable <- summary(sfit, times=times)
 
-    Time <- summary(sfit, times=times)$time
+    if (citrans){
+        stable$surv_ci  <- 1 - stable$surv
+        stable$lower_ci <- 1 - stable$upper
+        stable$upper_ci <- 1 - stable$lower
+
+        stable$surv  <- stable$surv_ci
+        stable$lower <- stable$lower_ci
+        stable$upper <- stable$upper_ci
+    }
+
+    Time <- stable$time
 
     form <- paste("%", surv.dec+2, ".", surv.dec, "f", sep="")
     if (perc) form <- paste("%", surv.dec+3, ".", surv.dec, "f", sep="")
@@ -48,11 +60,11 @@ survtab <- function(sfit
     symb <- ""
     if (perc) symb <- "%"
 
-    Survival <- paste(sprintf(form, round(stable$surv*mult,surv.dec)), symb,
+    Survival <- paste(sprintf(form, round(stable$surv*mult, surv.dec)), symb,
                       " [",
-                      sprintf(form, round(stable$lower*mult,surv.dec)), symb,
+                      sprintf(form, round(stable$lower*mult, surv.dec)), symb,
                       ", ",
-                      sprintf(form, round(stable$upper*mult,surv.dec)), symb,
+                      sprintf(form, round(stable$upper*mult, surv.dec)), symb,
                       "]", sep="")
 
     sdata <- data.frame(Time,
@@ -69,6 +81,8 @@ survtab <- function(sfit
     ### if time = 0 remove estimates for survival and events
     sdata[sdata[,"Time"] == paste("0", timelab),"Survival"] <- "---"
     sdata[sdata[,"Time"] == paste("0", timelab),"N events"] <- "---"
+
+    if (citrans) names(sdata)[2] <- "Cumulative Incidence"
 
     ### check if sfit object has stratafication or not
     ### if stratified check group names and apply group labels if any
