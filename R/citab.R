@@ -61,12 +61,24 @@ citab   <- function(msfit
     ci <- matrix(rep(NA, nrow(probs)*ncol(probs)), nrow = nrow(probs))
 
     for (i in 1:length(est$states)){
-        ci[,i] <- paste(sprintf(format, round(probs[,i], ci.dec)),
-                        " [",
-                        sprintf(format, round(lower[,i], ci.dec)),
-                        ", ",
-                        sprintf(format, round(upper[,i], ci.dec)),
-                        "]", sep="")
+        if (!perc){
+            ci[,i] <- paste0(sprintf(format, round(probs[,i], ci.dec))
+                            ," ["
+                            ,sprintf(format, round(lower[,i], ci.dec))
+                            ,", "
+                            ,sprintf(format, round(upper[,i], ci.dec))
+                            ,"]"
+                            )
+        }
+        if (perc){
+            ci[,i] <- paste0(sprintf(format, round(probs[,i], ci.dec))
+                            ,"% ["
+                            ,sprintf(format, round(lower[,i], ci.dec))
+                            ,"%, "
+                            ,sprintf(format, round(upper[,i], ci.dec))
+                            ,"%]"
+                            )
+        }
         ci[,i] <- gsub("NA|NaN", "---", ci[,i])
     }
     ci <- data.frame(ci)

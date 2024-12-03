@@ -306,7 +306,7 @@ ggcuminc <- function(msfit,
 
         if (!is.na(by)){
         if (graystest){
-            gtest <- cuminc(df[,timevar], df[,eventvar], group=df[,gr.name])$Tests[,"pv"]
+            gtest <- cmprsk::cuminc(df[,timevar], df[,eventvar], group=df[,gr.name])$Tests[,"pv"]
             p <- data.frame(gtest)
             p$event <- rownames(p)
             p$event <- factor(p$event,
@@ -322,7 +322,7 @@ ggcuminc <- function(msfit,
         g <- ggplot(data = subset(res_l, event != evlabs[which(events == state0)]), aes(x = time, y = prob)) +
                 geom_step(aes(color = group, linetype = group), size = cuminc.size) +
                 scale_linetype_manual(name = grname, values = ltys, labels = grlabs) +
-                   scale_color_manual(name = grname, values = cols, labels = grlabs) +
+                scale_color_manual(name = grname, values = cols[-1], labels = grlabs) +
                 facet_wrap(~event, nrow = 1) +
                 theme_bw() +
                 theme(panel.grid.major.x = element_blank(),
