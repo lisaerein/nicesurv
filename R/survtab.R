@@ -84,6 +84,9 @@ survtab <- function(sfit
 
     if (citrans) names(sdata)[2] <- "Cumulative Incidence"
 
+    # Do not want to report N events and N at risk for CI tables...
+    if (citrans) sdata <- sdata[,c("Time", "Cumulative Incidence")]
+
     ### check if sfit object has stratafication or not
     ### if stratified check group names and apply group labels if any
     grouped <- FALSE
@@ -113,7 +116,7 @@ survtab <- function(sfit
             cat(knit_print(
                 flextable(sdata) %>%
                 flextable::autofit() %>%
-                flextable::align(j = 1:4, align= "center", part = "all") %>%
+                flextable::align(j = 1:ncol(sdata), align= "center", part = "all") %>%
                 flextable::padding(padding = 0.5)
                 )
             )
@@ -172,7 +175,7 @@ survtab <- function(sfit
 
             cat(knit_print(flextable(sdatag) %>%
                       flextable::autofit() %>%
-                      flextable::align(j = 2:5, align= "center", part = "all") %>%
+                      flextable::align(j = 2:ncol(sdata), align= "center", part = "all") %>%
                       flextable::padding(padding = 0.5)
                       )
                 )
