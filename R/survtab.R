@@ -15,6 +15,7 @@
 #' @param htmlTable Logical. Indicator to use htmlTable package to display table instead of kable Default = FALSE.
 #' @param flextable Logical. Indicator to use flextable to print table. Default = TRUE.
 #' @param citrans Logical indicator whether to apply 1-x transformation for estimates. Default = FALSE.
+#' @param ext Logical indicator whether to extend estimates to timepoints beyond last event. Default = FALSE.
 #' @keywords summary survival table consulting Lisa
 #' @import survival
 #' @import flextable
@@ -34,10 +35,11 @@ survtab <- function(sfit
                     ,htmlTable = FALSE
                     ,flextable = TRUE
                     ,citrans = FALSE
+                    ,ext = FALSE
                     ){
 
-    if (printorig) print(summary(sfit, times=times))
-    stable <- summary(sfit, times=times)
+    if (printorig) print(summary(sfit, times=times, extend = ext))
+    stable <- summary(sfit, times=times, extend = ext)
 
     if (citrans){
         stable$surv_ci  <- 1 - stable$surv
